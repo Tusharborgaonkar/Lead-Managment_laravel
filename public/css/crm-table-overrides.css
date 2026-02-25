@@ -76,14 +76,42 @@ html.dark .crm-table-wrapper .tabulator .tabulator-header .tabulator-col .tabula
     border-color: #6366f1 transparent transparent transparent !important;
 }
 
-/* No resize handles */
+/* No resize handles (width resizing is disabled) */
 .crm-table-wrapper .tabulator .tabulator-header .tabulator-col .tabulator-col-resize-handle {
     display: none !important;
 }
 
-/* No column drag grip */
+/* No column resize guide */
 .crm-table-wrapper .tabulator .tabulator-header .tabulator-col .tabulator-col-resize-guide {
     display: none !important;
+}
+
+/* --- Column drag-and-drop (movableColumns) --------------- */
+/* Grab cursor on draggable headers */
+.crm-table-wrapper .tabulator .tabulator-header .tabulator-col {
+    cursor: grab !important;
+}
+
+.crm-table-wrapper .tabulator .tabulator-header .tabulator-col:active {
+    cursor: grabbing !important;
+}
+
+/* Ghost column being dragged */
+.crm-table-wrapper .tabulator-col.tabulator-moving {
+    background: rgba(99, 102, 241, 0.08) !important;
+    border: 1px dashed #6366f1 !important;
+    border-radius: 0.5rem !important;
+    pointer-events: none !important;
+    opacity: 0.85 !important;
+}
+
+html.dark .crm-table-wrapper .tabulator-col.tabulator-moving {
+    background: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Drop placeholder line between columns */
+.crm-table-wrapper .tabulator .tabulator-header .tabulator-col.tabulator-col-move-marker {
+    border-left: 2px solid #6366f1 !important;
 }
 
 /* No header filter inputs in header */

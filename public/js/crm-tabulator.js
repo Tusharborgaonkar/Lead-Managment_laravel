@@ -48,8 +48,8 @@ function createCRMTable(selector, columns, data, overrides) {
         layout: "fitDataFill",
         responsiveLayout: false,
 
-        // Disable interactive features that change layout
-        movableColumns: false,
+        // Interactive features
+        movableColumns: true,
         resizableColumns: false,
         resizableRows: false,
 
