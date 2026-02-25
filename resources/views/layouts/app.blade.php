@@ -39,6 +39,10 @@
     {{-- SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    {{-- Tabulator --}}
+    <link href="https://unpkg.com/tabulator-tables@6.3.1/dist/css/tabulator.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/crm-table-overrides.css') }}">
+
     {{-- Custom CSS --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
@@ -69,6 +73,10 @@
         </main>
     </div>
 </div>
+
+{{-- Tabulator JS --}}
+<script src="https://unpkg.com/tabulator-tables@6.3.1/dist/js/tabulator.min.js"></script>
+<script src="{{ asset('js/crm-tabulator.js') }}"></script>
 
 {{-- Main JS (Lucide init + dark mode + dropdowns) --}}
 <script src="{{ asset('js/app.js') }}"></script>

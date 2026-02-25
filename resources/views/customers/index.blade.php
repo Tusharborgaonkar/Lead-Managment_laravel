@@ -114,153 +114,169 @@
 
 <!-- Customers Table -->
 <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 text-left">
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Company</th>
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Group</th>
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Spent</th>
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Orders</th>
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Rating</th>
-                    <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="customers-tbody" class="divide-y divide-slate-50 dark:divide-slate-700/50">
-                @foreach($customers as $customer)
-                <tr class="customer-row hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors group" 
-                    data-id="{{ $customer->id }}"
-                    data-name="{{ strtolower($customer->name) }}" 
-                    data-email="{{ strtolower($customer->email) }}"
-                    data-group="{{ $customer->group }}" 
-                    data-status="{{ strtolower($customer->status) }}"
-                    data-spent="{{ $customer->spent_raw }}"
-                    data-orders="{{ $customer->orders }}"
-                    data-rating="{{ $customer->rating }}">
-                    <td class="px-6 py-5">
-                        <div class="flex items-center gap-4">
-                            @php
-                                $initials = collect(explode(' ', $customer->name))->map(fn($n) => substr($n, 0, 1))->join('');
-                                $colorMap = [
-                                    'indigo' => 'bg-indigo-500 text-white',
-                                    'emerald' => 'bg-emerald-500 text-white',
-                                    'orange' => 'bg-orange-500 text-white',
-                                    'rose' => 'bg-rose-500 text-white',
-                                    'slate' => 'bg-slate-500 text-white',
-                                ];
-                            @endphp
-                            <div class="w-10 h-10 rounded-xl {{ $colorMap[$customer->avatar_color] ?? 'bg-indigo-500 text-white' }} flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-slate-700 shadow-sm">
-                                {{ strtoupper($initials) }}
-                            </div>
-                            <div>
-                                <p class="font-bold text-slate-800 dark:text-white leading-tight mb-0.5">{{ $customer->name }}</p>
-                                <p class="text-xs text-slate-400 font-medium">{{ $customer->email }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-5">
-                        <span class="text-slate-600 dark:text-slate-300 font-medium">{{ $customer->company }}</span>
-                    </td>
-                    <td class="px-6 py-5">
-                        <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
-                            {{ $customer->group }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-5">
-                        <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest {{ $customer->status === 'active' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600' : 'bg-slate-50 dark:bg-slate-500/10 text-slate-500' }} border {{ $customer->status === 'active' ? 'border-emerald-100 dark:border-emerald-500/20' : 'border-slate-100 dark:border-slate-500/20' }}">
-                            {{ $customer->status }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-5">
-                        <span class="font-bold text-slate-800 dark:text-white">{{ $customer->spent }}</span>
-                    </td>
-                    <td class="px-6 py-5 text-slate-600 dark:text-slate-400 font-medium">
-                        {{ $customer->orders }}
-                    </td>
-                    <td class="px-6 py-5">
-                        <div class="flex items-center gap-1.5">
-                            <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i>
-                            <span class="font-bold text-slate-800 dark:text-white">{{ number_format($customer->rating, 1) }}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-5 text-right">
-                        <div class="flex items-center justify-end gap-2">
-                            <a href="{{ route('customers.show', $customer->id) }}" class="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 transition-all shadow-sm border border-transparent hover:border-indigo-100">
-                                <i data-lucide="eye" class="w-4 h-4"></i>
-                            </a>
-                            <a href="{{ route('customers.edit', $customer->id) }}" class="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-all shadow-sm border border-transparent hover:border-blue-100">
-                                <i data-lucide="edit-3" class="w-4 h-4"></i>
-                            </a>
-                            <button type="button" 
-                                    class="swal-delete p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/40 transition-all shadow-sm border border-transparent hover:border-rose-100" 
-                                    data-form-id="delete-form-{{ $customer->id }}"
-                                    data-name="{{ $customer->name }}"
-                                    title="Delete Customer">
-                                <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                            </button>
-                            <form id="delete-form-{{ $customer->id }}" action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="hidden">
-                                @csrf @method('DELETE')
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="crm-table-wrapper overflow-x-auto">
+        <div id="customers-table"></div>
     </div>
 </div>
+
+{{-- Hidden delete forms for SweetAlert --}}
+@foreach($customers as $customer)
+<form id="delete-form-{{ $customer->id }}" action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="hidden">
+    @csrf @method('DELETE')
+</form>
+@endforeach
+
 @endsection
+
+@php
+    $customersData = $customers->map(function($customer) {
+        $initials = collect(explode(' ', $customer->name))->map(fn($n) => substr($n, 0, 1))->join('');
+        $colorMap = [
+            'indigo' => 'bg-indigo-500 text-white',
+            'emerald' => 'bg-emerald-500 text-white',
+            'orange' => 'bg-orange-500 text-white',
+            'rose' => 'bg-rose-500 text-white',
+            'slate' => 'bg-slate-500 text-white',
+        ];
+        return [
+            'id' => $customer->id,
+            'name' => $customer->name,
+            'email' => $customer->email,
+            'initials' => strtoupper($initials),
+            'avatar_class' => $colorMap[$customer->avatar_color] ?? 'bg-indigo-500 text-white',
+            'company' => $customer->company,
+            'group' => $customer->group,
+            'status' => $customer->status,
+            'spent' => $customer->spent,
+            'spent_raw' => $customer->spent_raw,
+            'orders' => $customer->orders,
+            'rating' => number_format($customer->rating, 1),
+            'show_url' => route('customers.show', $customer->id),
+            'edit_url' => route('customers.edit', $customer->id),
+        ];
+    })->values();
+@endphp
 
 @push('scripts')
 <script>
-function filterCustomers() {
-    const search = document.getElementById('customer-search').value.toLowerCase();
-    const group = document.getElementById('filter-group').value;
-    const status = document.getElementById('filter-status').value;
-    const rows = document.querySelectorAll('.customer-row');
+var customersTable;
 
-    rows.forEach(row => {
-        const name = row.dataset.name;
-        const email = row.dataset.email;
-        const cGroup = row.dataset.group;
-        const cStatus = row.dataset.status;
+var customersData = @json($customersData);
 
-        const matchesSearch = name.includes(search) || email.includes(search);
-        const matchesGroup = group === 'all' || cGroup === group;
-        const matchesStatus = status === 'all' || cStatus === status;
-
-        if (matchesSearch && matchesGroup && matchesStatus) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
+document.addEventListener('DOMContentLoaded', function() {
+    customersTable = createCRMTable('#customers-table', [
+        {
+            title: 'Customer',
+            field: 'name',
+            minWidth: 220,
+            formatter: function(cell) {
+                var d = cell.getData();
+                return '<div class="flex items-center gap-4">' +
+                    '<div class="w-10 h-10 rounded-xl ' + d.avatar_class + ' flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-slate-700 shadow-sm">' + d.initials + '</div>' +
+                    '<div><p class="font-bold text-slate-800 dark:text-white leading-tight mb-0.5">' + d.name + '</p>' +
+                    '<p class="text-xs text-slate-400 font-medium">' + d.email + '</p></div>' +
+                '</div>';
+            }
+        },
+        {
+            title: 'Company',
+            field: 'company',
+            minWidth: 120,
+            formatter: function(cell) {
+                return '<span class="text-slate-600 dark:text-slate-300 font-medium">' + (cell.getValue() || '') + '</span>';
+            }
+        },
+        {
+            title: 'Group',
+            field: 'group',
+            minWidth: 130,
+            formatter: function(cell) {
+                var val = cell.getValue() || '';
+                return '<span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">' + val + '</span>';
+            }
+        },
+        {
+            title: 'Status',
+            field: 'status',
+            minWidth: 100,
+            formatter: function(cell) {
+                var val = cell.getValue() || '';
+                var isActive = val === 'active';
+                var cls = isActive ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 border-emerald-100 dark:border-emerald-500/20' : 'bg-slate-50 dark:bg-slate-500/10 text-slate-500 border-slate-100 dark:border-slate-500/20';
+                return '<span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ' + cls + ' border">' + val + '</span>';
+            }
+        },
+        {
+            title: 'Spent',
+            field: 'spent_raw',
+            minWidth: 100,
+            formatter: function(cell) {
+                var d = cell.getData();
+                return '<span class="font-bold text-slate-800 dark:text-white">' + d.spent + '</span>';
+            }
+        },
+        {
+            title: 'Orders',
+            field: 'orders',
+            minWidth: 80,
+            formatter: function(cell) {
+                return '<span class="text-slate-600 dark:text-slate-400 font-medium">' + (cell.getValue() || 0) + '</span>';
+            }
+        },
+        {
+            title: 'Rating',
+            field: 'rating',
+            minWidth: 80,
+            formatter: function(cell) {
+                return '<div class="flex items-center gap-1.5"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i><span class="font-bold text-slate-800 dark:text-white">' + cell.getValue() + '</span></div>';
+            }
+        },
+        {
+            title: 'Actions',
+            field: 'id',
+            headerSort: false,
+            hozAlign: 'right',
+            minWidth: 140,
+            formatter: function(cell) {
+                var d = cell.getData();
+                return '<div class="flex items-center justify-end gap-2">' +
+                    '<a href="' + d.show_url + '" class="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 transition-all shadow-sm border border-transparent hover:border-indigo-100"><i data-lucide="eye" class="w-4 h-4"></i></a>' +
+                    '<a href="' + d.edit_url + '" class="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-all shadow-sm border border-transparent hover:border-blue-100"><i data-lucide="edit-3" class="w-4 h-4"></i></a>' +
+                    '<button type="button" class="swal-delete p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/40 transition-all shadow-sm border border-transparent hover:border-rose-100" data-form-id="delete-form-' + d.id + '" data-name="' + d.name + '" title="Delete Customer"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>' +
+                '</div>';
+            }
         }
-    });
+    ], customersData);
+});
 
-    // Handle empty state if needed
-    const visibleRows = Array.from(rows).filter(r => r.style.display !== 'none');
-    // Show/hide no results row if you had one
+function filterCustomers() {
+    if (!customersTable) return;
+    var search = document.getElementById('customer-search').value.toLowerCase();
+    var group = document.getElementById('filter-group').value;
+    var status = document.getElementById('filter-status').value;
+
+    customersTable.setFilter(function(data) {
+        var matchesSearch = !search ||
+            data.name.toLowerCase().includes(search) ||
+            data.email.toLowerCase().includes(search);
+        var matchesGroup = group === 'all' || data.group === group;
+        var matchesStatus = status === 'all' || data.status === status;
+        return matchesSearch && matchesGroup && matchesStatus;
+    });
 }
 
 function sortCustomers() {
-    const sortBy = document.getElementById('customer-sort').value;
-    const tbody = document.getElementById('customers-tbody');
-    const rows = Array.from(tbody.querySelectorAll('.customer-row'));
+    if (!customersTable) return;
+    var sortBy = document.getElementById('customer-sort').value;
 
-    rows.sort((a, b) => {
-        if (sortBy === 'name-asc') {
-            return a.dataset.name.localeCompare(b.dataset.name);
-        } else if (sortBy === 'spent-desc') {
-            return parseFloat(b.dataset.spent) - parseFloat(a.dataset.spent);
-        } else {
-            // Newest (ID desc as proxy for static)
-            return parseInt(b.dataset.id || 0) - parseInt(a.dataset.id || 0);
-        }
-    });
-
-    rows.forEach(row => tbody.appendChild(row));
+    if (sortBy === 'name-asc') {
+        customersTable.setSort('name', 'asc');
+    } else if (sortBy === 'spent-desc') {
+        customersTable.setSort('spent_raw', 'desc');
+    } else {
+        customersTable.setSort('id', 'desc');
+    }
 }
-
 </script>
 @endpush
+

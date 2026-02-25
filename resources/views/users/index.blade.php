@@ -31,92 +31,130 @@
 </div>
 
 <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm" id="usersTable">
-            <thead class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700">
-                <tr>
-                    <th class="text-left px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Joined</th>
-                    <th class="text-right px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-50 dark:divide-slate-700" id="usersTbody">
-                @forelse($users as $user)
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition user-row"
-                    data-name="{{ strtolower($user->name) }}"
-                    data-email="{{ strtolower($user->email) }}"
-                    data-role="{{ strtolower($user->role?->name) }}"
-                    data-status="{{ $user->status }}">
-                    <td class="px-5 py-3.5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                                {{ strtoupper(substr($user->name, 0, 2)) }}
-                            </div>
-                            <span class="font-semibold text-slate-800 dark:text-white">{{ $user->name }}</span>
-                        </div>
-                    </td>
-                    <td class="px-5 py-3.5 text-slate-500">{{ $user->email }}</td>
-                    <td class="px-5 py-3.5">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">
-                            {{ $user->role?->name ?? 'No Role' }}
-                        </span>
-                    </td>
-                    <td class="px-5 py-3.5">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $user->status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">
-                            {{ ucfirst($user->status) }}
-                        </span>
-                    </td>
-                    <td class="px-5 py-3.5 text-slate-400">{{ $user->created_at->format('M d, Y') }}</td>
-                    <td class="px-5 py-3.5 text-right">
-                        <form id="delete-user-{{ $user->id }}" method="POST" action="{{ route('users.destroy', $user->id) }}" class="inline">
-                            @csrf @method('DELETE')
-                            <button type="button" 
-                                    class="swal-delete p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" 
-                                    data-form-id="delete-user-{{ $user->id }}"
-                                    data-name="{{ $user->name }}"
-                                    title="Delete User">
-                                <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
-                            </button>
-                        </form>
-                        @else
-                        <span class="text-xs text-slate-300">You</span>
-                        @endif
-                    </td>
-
-                </tr>
-                @empty
-                <tr><td colspan="6" class="px-5 py-12 text-center text-slate-400">No users found.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="crm-table-wrapper overflow-x-auto">
+        <div id="users-table"></div>
     </div>
 </div>
 
+{{-- Hidden delete forms for SweetAlert --}}
+@foreach($users as $user)
+@if(auth()->id() !== $user->id)
+<form id="delete-user-{{ $user->id }}" method="POST" action="{{ route('users.destroy', $user->id) }}" class="hidden">
+    @csrf @method('DELETE')
+</form>
+@endif
+@endforeach
+
+@php
+    $usersData = $users->map(function($user) {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'initials' => strtoupper(substr($user->name, 0, 2)),
+            'email' => $user->email,
+            'role' => $user->role ? $user->role->name : 'No Role',
+            'status' => $user->status,
+            'joined' => $user->created_at->format('M d, Y'),
+        ];
+    })->values();
+@endphp
+
 @push('scripts')
 <script>
-(function() {
-    const search = document.getElementById('filterSearch');
-    const role   = document.getElementById('filterRole');
-    const status = document.getElementById('filterStatus');
+var usersTable;
+var authUserId = {{ auth()->id() }};
+
+var usersData = @json($usersData);
+
+document.addEventListener('DOMContentLoaded', function() {
+    usersTable = createCRMTable('#users-table', [
+        {
+            title: 'User',
+            field: 'name',
+            minWidth: 180,
+            formatter: function(cell) {
+                var d = cell.getData();
+                return '<div class="flex items-center gap-3">' +
+                    '<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">' + d.initials + '</div>' +
+                    '<span class="font-semibold text-slate-800 dark:text-white">' + d.name + '</span>' +
+                '</div>';
+            }
+        },
+        {
+            title: 'Email',
+            field: 'email',
+            minWidth: 200,
+            formatter: function(cell) {
+                return '<span class="text-slate-500">' + (cell.getValue() || '') + '</span>';
+            }
+        },
+        {
+            title: 'Role',
+            field: 'role',
+            minWidth: 120,
+            formatter: function(cell) {
+                var val = cell.getValue() || 'No Role';
+                return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">' + val + '</span>';
+            }
+        },
+        {
+            title: 'Status',
+            field: 'status',
+            minWidth: 100,
+            formatter: function(cell) {
+                var val = cell.getValue() || '';
+                var isActive = val === 'active';
+                var cls = isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500';
+                return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold ' + cls + '">' + val.charAt(0).toUpperCase() + val.slice(1) + '</span>';
+            }
+        },
+        {
+            title: 'Joined',
+            field: 'joined',
+            minWidth: 120,
+            formatter: function(cell) {
+                return '<span class="text-slate-400">' + (cell.getValue() || '') + '</span>';
+            }
+        },
+        {
+            title: 'Actions',
+            field: 'id',
+            headerSort: false,
+            hozAlign: 'right',
+            minWidth: 80,
+            formatter: function(cell) {
+                var d = cell.getData();
+                if (d.id === authUserId) {
+                    return '<span class="text-xs text-slate-300">You</span>';
+                }
+                return '<button type="button" class="swal-delete p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" data-form-id="delete-user-' + d.id + '" data-name="' + d.name + '" title="Delete User"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>';
+            }
+        }
+    ], usersData);
+
+    // Wire existing filter inputs to Tabulator
+    var searchEl = document.getElementById('filterSearch');
+    var roleEl = document.getElementById('filterRole');
+    var statusEl = document.getElementById('filterStatus');
 
     function applyFilters() {
-        const q = search.value.toLowerCase();
-        const r = role.value.toLowerCase();
-        const s = status.value.toLowerCase();
+        if (!usersTable) return;
+        var q = searchEl.value.toLowerCase();
+        var r = roleEl.value.toLowerCase();
+        var s = statusEl.value.toLowerCase();
 
-        document.querySelectorAll('.user-row').forEach(row => {
-            const nameMatch   = row.dataset.name.includes(q) || row.dataset.email.includes(q);
-            const roleMatch   = !r || row.dataset.role === r;
-            const statusMatch = !s || row.dataset.status === s;
-            row.style.display = (nameMatch && roleMatch && statusMatch) ? '' : 'none';
+        usersTable.setFilter(function(data) {
+            var nameMatch = !q || data.name.toLowerCase().includes(q) || data.email.toLowerCase().includes(q);
+            var roleMatch = !r || data.role.toLowerCase() === r;
+            var statusMatch = !s || data.status === s;
+            return nameMatch && roleMatch && statusMatch;
         });
     }
 
-    [search, role, status].forEach(el => el.addEventListener('input', applyFilters));
-})();
+    searchEl.addEventListener('input', applyFilters);
+    roleEl.addEventListener('input', applyFilters);
+    statusEl.addEventListener('input', applyFilters);
+});
 </script>
 @endpush
 @endsection
