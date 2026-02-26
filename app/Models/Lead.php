@@ -12,7 +12,9 @@ class Lead extends Model
         'name',
         'email',
         'phone',
+        'optional_phone',
         'company',
+        'website',
         'source',
         'category',
         'value',
@@ -20,6 +22,7 @@ class Lead extends Model
         'has_notes',
         'notes_count',
         'description',
+        'followup_methods',
         'followup_date',
         'avatar_color',
         'assigned_to',
@@ -30,10 +33,25 @@ class Lead extends Model
     protected $casts = [
         'value' => 'decimal:2',
         'has_notes' => 'boolean',
+        'followup_methods' => 'array',
         'followup_date' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function getInitialsAttribute()
+    {
+        $words = explode(' ', $this->name);
+        if (count($words) >= 2) {
+            return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+        }
+        return strtoupper(substr($this->name, 0, 2));
+    }
+
+    public function getColorAttribute()
+    {
+        return $this->avatar_color ?: 'indigo';
+    }
 
     public function customer(): BelongsTo
     {
@@ -57,22 +75,28 @@ class Lead extends Model
 
     public function assignedTo(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        return $this->belongsTo(User::class , 'assigned_to');
     }
 
     public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class , 'created_by');
     }
 
     public function updatedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(User::class , 'updated_by');
     }
 
     public function activityLogs(): HasMany
     {
-        return $this->hasMany(ActivityLog::class, 'entity_id')
+        return $this->hasMany(ActivityLog::class , 'entity_id')
             ->where('entity_type', self::class);
+    }
+
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('status', 'Pending');
     }
 }

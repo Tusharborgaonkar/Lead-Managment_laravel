@@ -117,6 +117,11 @@
     <div class="crm-table-wrapper overflow-x-auto">
         <div id="customers-table"></div>
     </div>
+    @if($customers->hasPages())
+    <div class="px-8 py-6 border-t border-slate-50 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
+        {{ $customers->links() }}
+    </div>
+    @endif
 </div>
 
 {{-- Hidden delete forms for SweetAlert --}}
@@ -147,9 +152,9 @@
             'company' => $customer->company,
             'group' => $customer->group,
             'status' => $customer->status,
-            'spent' => $customer->spent,
-            'spent_raw' => $customer->spent_raw,
-            'orders' => $customer->orders,
+            'spent' => '$' . number_format($customer->total_spent, 2),
+            'spent_raw' => $customer->total_spent,
+            'orders' => $customer->total_orders,
             'rating' => number_format($customer->rating, 1),
             'show_url' => route('customers.show', $customer->id),
             'edit_url' => route('customers.edit', $customer->id),

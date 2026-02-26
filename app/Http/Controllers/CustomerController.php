@@ -18,6 +18,7 @@ class CustomerController extends Controller
             'active' => Customer::where('status', 'active')->count(),
             'avg_value' => '$' . number_format(Customer::avg('total_spent') ?? 0, 2),
             'retention' => '68%',
+            'pending' => Customer::pending()->count(),
             'trend' => '+8.3%'
         ];
 
@@ -67,10 +68,9 @@ class CustomerController extends Controller
 
     public function destroy($id)
     {
-        $deletedIds = session('deleted_customer_ids', []);
-        $deletedIds[] = $id;
-        session(['deleted_customer_ids' => array_unique($deletedIds)]);
+        $customer = Customer::findOrFail($id);
+        $customer->delete();
 
-        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully');
+        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
     }
 }

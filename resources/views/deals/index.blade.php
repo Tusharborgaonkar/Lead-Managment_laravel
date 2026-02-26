@@ -123,12 +123,12 @@
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 dark:hover:shadow-none transition-all cursor-move group">
                         <div class="flex items-start justify-between mb-4">
                             <div>
-                                <h6 class="text-sm font-black text-slate-800 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors">{{ $deal->title }}</h6>
-                                <p class="text-lg font-black text-indigo-600">{{ $deal->value }}</p>
+                                <a href="{{ route('deals.edit', $deal->id) }}" class="text-sm font-black text-slate-800 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors block">{{ $deal->title }}</a>
+                                <p class="text-lg font-black text-indigo-600">${{ number_format($deal->value) }}</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-xl bg-{{ $deal->color }}-50 dark:bg-{{ $deal->color }}-900/20 flex items-center justify-center text-[10px] font-black text-{{ $deal->color }}-600 uppercase">
-                                    {{ substr($deal->client, 0, 2) }}
+                                <div class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-[10px] font-black text-indigo-600 uppercase">
+                                    {{ substr($deal->customer->name ?? 'NA', 0, 2) }}
                                 </div>
                                 <form id="delete-deal-{{ $deal->id }}" action="{{ route('deals.destroy', $deal->id) }}" method="POST" class="inline">
                                     @csrf @method('DELETE')
@@ -143,7 +143,7 @@
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-400 truncate pr-4">{{ $deal->client }}</span>
+                            <span class="text-xs font-bold text-slate-400 truncate pr-4">{{ $deal->customer->company ?? $deal->customer->name ?? 'N/A' }}</span>
                             <div class="flex -space-x-2">
                                 <div class="w-6 h-6 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 flex items-center justify-center overflow-hidden">
                                      <i data-lucide="user" class="w-3 h-3 text-slate-400"></i>

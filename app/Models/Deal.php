@@ -53,22 +53,22 @@ class Deal extends Model
 
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(User::class , 'owner_id');
     }
 
     public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class , 'created_by');
     }
 
     public function updatedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(User::class , 'updated_by');
     }
 
     public function activityLogs(): HasMany
     {
-        return $this->hasMany(ActivityLog::class, 'entity_id')
+        return $this->hasMany(ActivityLog::class , 'entity_id')
             ->where('entity_type', self::class);
     }
 
@@ -85,5 +85,21 @@ class Deal extends Model
     public function isOpen(): bool
     {
         return $this->stage === 'Open';
+    }
+
+    // Scopes
+    public function scopeWon($query)
+    {
+        return $query->where('stage', 'Won');
+    }
+
+    public function scopeLost($query)
+    {
+        return $query->where('stage', 'Lost');
+    }
+
+    public function scopeOpen($query)
+    {
+        return $query->where('stage', 'Open');
     }
 }

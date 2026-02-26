@@ -22,7 +22,7 @@ class UpdateDealRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'value' => 'required|numeric',
             'stage' => 'required|string',
             'customer_id' => 'required|exists:customers,id',

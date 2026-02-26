@@ -25,11 +25,15 @@ class StoreLeadRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
+            'optional_phone' => 'nullable|string|max:50',
             'company' => 'nullable|string|max:255',
+            'website' => 'nullable|url|max:255',
             'source' => 'nullable|string|max:100',
             'category' => 'required|string|in:Not Interested,Followup,Pending,Confirm',
             'value' => 'nullable|numeric',
             'description' => 'nullable|string',
+            'followup_methods' => 'nullable|array',
+            'followup_methods.*' => 'string|in:whatsapp,email,cold_call',
             'followup_date' => 'nullable|date',
         ];
     }

@@ -17,7 +17,7 @@ class LeadController extends Controller
             'total' => Lead::count(),
             'not_interested' => Lead::where('category', 'Not Interested')->count(),
             'followup' => Lead::where('category', 'Followup')->count(),
-            'pending' => Lead::where('category', 'Pending')->count(),
+            'pending' => Lead::pending()->count(),
             'confirm' => Lead::where('category', 'Confirm')->count(),
             'has_notes' => Lead::where('has_notes', true)->count(),
             'notes_added_today' => 0,
@@ -31,7 +31,7 @@ class LeadController extends Controller
 
     public function create()
     {
-        $agents = collect([(object)['id' => 1, 'name' => 'Agent Smith'], (object)['id' => 2, 'name' => 'Agent J']]);
+        $agents = \App\Models\User::all();
         return view('leads.create', compact('agents'));
     }
 
@@ -74,6 +74,9 @@ class LeadController extends Controller
 
     public function destroy($id)
     {
-        return redirect()->route('leads.index')->with('success', 'Lead deleted successfully (Static Mock).');
+        $lead = Lead::findOrFail($id);
+        $lead->delete();
+
+        return redirect()->route('leads.index')->with('success', 'Lead deleted successfully.');
     }
 }

@@ -41,7 +41,7 @@
     <div class="p-8">
         <div class="relative space-y-12 before:absolute before:inset-0 before:ml-6 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-100 dark:before:via-slate-800 before:to-transparent">
             @foreach($activities as $act)
-            <div class="relative flex items-start gap-8 group" data-user="{{ $act->user }}" data-action="{{ $act->action }}" data-target="{{ $act->target }}" data-type="{{ $act->type }}" data-color="{{ $act->color }}" data-icon="{{ $act->icon }}">
+            <div class="relative flex items-start gap-8 group" data-id="{{ $act->id }}" data-user="{{ $act->user_name }}" data-action="{{ $act->action }}" data-target="{{ $act->target }}" data-type="{{ $act->type }}" data-color="{{ $act->color }}" data-icon="{{ $act->icon }}">
                 {{-- Icon Indicator --}}
                 <div class="w-12 h-12 rounded-2xl bg-{{ $act->color }}-50 dark:bg-{{ $act->color }}-900/20 flex items-center justify-center flex-shrink-0 z-10 border-4 border-white dark:border-slate-900 shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md">
                     <i data-lucide="{{ $act->icon }}" class="w-5 h-5 text-{{ $act->color }}-500"></i>
@@ -56,8 +56,8 @@
                                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter">{{ $act->time }}</span>
                             </div>
                             <p class="text-sm font-medium text-slate-600 dark:text-slate-300 activity-text">
-                                <span class="font-black text-slate-800 dark:text-white user-name">{{ $act->user }}</span> 
-                                <span class="action-text">{{ $act->action }}</span> <span class="font-bold text-indigo-500 target-text">{{ $act->target }}</span>
+                                <span class="font-black text-slate-800 dark:text-white user-name">{{ $act->user_name }}</span> 
+                                <span class="action-text">{{ $act->description }}</span> <span class="font-bold text-indigo-500 target-text">{{ $act->target }}</span>
                             </p>
                         </div>
                         <div class="flex items-center gap-2">
@@ -68,20 +68,26 @@
                                 <button onclick="openEditModal(this.closest('.group'))" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 hover:text-indigo-600 transition-all shadow-sm" title="Edit Log">
                                     <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                 </button>
-                                <button onclick="this.closest('.relative.flex.items-start.gap-8').remove();" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 hover:text-rose-500 transition-all shadow-sm" title="Delete Log">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                </button>
+                                <form id="delete-activity-{{ $act->id }}" action="{{ route('activity.destroy', $act->id) }}" method="POST" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="button" class="swal-delete p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 hover:text-rose-500 transition-all shadow-sm" title="Delete Log" data-form-id="delete-activity-{{ $act->id }}" data-name="activity log {{ $act->id }}">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5 pointer-events-none"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             @endforeach
-        </div>
     </div>
     
     <div class="bg-slate-50/50 dark:bg-slate-900/50 p-6 border-t border-slate-100 dark:border-slate-800/60 text-center">
-        <button class="text-xs font-bold text-slate-400 cursor-default">You've reached the end of the activity history for this week</button>
+        @if($activities->hasPages())
+            {{ $activities->links() }}
+        @else
+            <button class="text-xs font-bold text-slate-400 cursor-default">You've reached the end of the activity history for this week</button>
+        @endif
     </div>
 </div>
 
@@ -97,33 +103,33 @@
                 </button>
             </div>
             
-            <form id="edit-form" class="p-8 space-y-6" onsubmit="updateActivity(event)">
+            <form id="edit-form" method="POST" class="p-8 space-y-6">
+                @csrf
+                @method('PUT')
                 <div class="grid grid-cols-2 gap-5">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">User</label>
-                        <input type="text" id="edit-user" required class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all">
+                        <input type="text" id="edit-user" disabled class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Activity Type</label>
-                        <select id="edit-type" required class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Activity Type / Status</label>
+                        <select id="edit-type" name="action" required class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <option value="Created">Created</option>
+                            <option value="Updated">Updated</option>
+                            <option value="Deleted">Deleted</option>
                             <option value="Info">Info</option>
-                            <option value="Success">Success</option>
-                            <option value="Update">Update</option>
-                            <option value="Activity">Activity</option>
-                            <option value="Warning">Warning</option>
-                            <option value="System">System</option>
                         </select>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Action Description</label>
-                    <input type="text" id="edit-action" required class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all">
+                    <input type="text" id="edit-action" name="description" required class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all">
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Target</label>
-                    <input type="text" id="edit-target" required class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-black text-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all">
+                    <input type="text" id="edit-target" disabled class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none text-sm font-black text-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all">
                 </div>
 
                 <div class="flex gap-3 pt-2">
@@ -144,6 +150,9 @@
 
     function openEditModal(row) {
         currentEditRow = row;
+        const form = document.getElementById('edit-form');
+        form.action = '/activity/' + row.dataset.id;
+        
         document.getElementById('edit-user').value = row.dataset.user;
         document.getElementById('edit-type').value = row.dataset.type;
         document.getElementById('edit-action').value = row.dataset.action;
@@ -157,49 +166,6 @@
         document.getElementById('edit-modal').classList.add('hidden');
         document.body.style.overflow = 'auto';
         currentEditRow = null;
-    }
-
-    function updateActivity(event) {
-        event.preventDefault();
-        if (!currentEditRow) return;
-
-        const user = document.getElementById('edit-user').value;
-        const type = document.getElementById('edit-type').value;
-        const action = document.getElementById('edit-action').value;
-        const target = document.getElementById('edit-target').value;
-
-        const typeColors = {
-            'Success': 'emerald',
-            'Info': 'indigo',
-            'Update': 'amber',
-            'Activity': 'indigo',
-            'Warning': 'rose',
-            'System': 'slate'
-        };
-
-        const color = typeColors[type] || 'slate';
-
-        // Update dataset
-        currentEditRow.dataset.user = user;
-        currentEditRow.dataset.type = type;
-        currentEditRow.dataset.action = action;
-        currentEditRow.dataset.target = target;
-        currentEditRow.dataset.color = color;
-
-        // Update UI
-        const iconContainer = currentEditRow.querySelector('.w-12.h-12');
-        iconContainer.className = `w-12 h-12 rounded-2xl bg-${color}-50 dark:bg-${color}-900/20 flex items-center justify-center flex-shrink-0 z-10 border-4 border-white dark:border-slate-900 shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md`;
-        
-        const badge = currentEditRow.querySelector('.type-badge');
-        badge.className = `text-xs font-black uppercase tracking-widest text-${color}-500 bg-${color}-50 dark:bg-${color}-900/40 px-2 py-0.5 rounded-md type-badge`;
-        badge.innerText = type;
-
-        currentEditRow.querySelector('.user-name').innerText = user;
-        currentEditRow.querySelector('.action-text').innerText = action;
-        currentEditRow.querySelector('.target-text').innerText = target;
-
-        closeEditModal();
-        if (window.lucide) lucide.createIcons();
     }
 </script>
 @endsection

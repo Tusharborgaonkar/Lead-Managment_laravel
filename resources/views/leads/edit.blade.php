@@ -220,9 +220,9 @@
                     {{-- Notes Section --}}
                     <div class="space-y-3">
                         <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Initial Conversation Notes</label>
-                        <textarea name="notes" rows="4"
+                        <textarea name="description" rows="4"
                                   class="w-full px-8 py-7 rounded-[2.5rem] bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm resize-none"
-                                  placeholder="What was discussed? (e.g., Budget, requirement, follow-up date)">{{ old('notes', $lead->notes) }}</textarea>
+                                  placeholder="What was discussed? (e.g., Budget, requirement, follow-up date)">{{ old('description', $lead->description) }}</textarea>
                     </div>
 
                     <div class="pt-4 flex items-center gap-4">

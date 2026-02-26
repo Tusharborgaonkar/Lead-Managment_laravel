@@ -22,11 +22,14 @@ class StoreFollowupRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title' => 'required|string|max:255',
             'type' => 'required|string|in:Call,Meeting,Email,Demo,Legal,Lead',
             'description' => 'required|string',
-            'followup_at' => 'required|date',
+            'scheduled_at' => 'required|date',
             'status' => 'required|string|in:Pending,Completed,Cancelled',
-            'lead_id' => 'required|exists:leads,id',
+            'lead_id' => 'nullable|exists:leads,id',
+            'customer_id' => 'nullable|exists:customers,id',
+            'deal_id' => 'nullable|exists:deals,id',
             'assigned_to' => 'nullable|exists:users,id'
         ];
     }

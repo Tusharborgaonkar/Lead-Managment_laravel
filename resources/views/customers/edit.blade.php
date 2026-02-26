@@ -94,8 +94,8 @@
                     </div>
 
                     <div class="flex flex-col gap-2.5 md:col-span-2 lg:col-span-1">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Office Address</label>
-                        <input type="text" name="address" value="{{ $customer->address }}" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Alternative Phone <span class="text-slate-400 font-medium normal-case tracking-normal">(Optional)</span></label>
+                        <input type="text" name="phone_alt" value="{{ old('phone_alt', $customer->phone_alt) }}" placeholder="e.g. +1 (555) 999-9999" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all">
                     </div>
                 </div>
             </div>

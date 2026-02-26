@@ -18,6 +18,11 @@
         <button onclick="alert('Static Demo: Navigated to next month.')" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-all active:scale-95">
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
         </button>
+        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <a href="{{ route('followups.create') }}" class="flex items-center gap-2.5 px-6 py-2.5 bg-indigo-600 text-white rounded-2xl text-sm font-black shadow-lg shadow-indigo-500/25 hover:bg-indigo-700 transition active:scale-95">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            New Follow-up
+        </a>
     </div>
 </div>
 

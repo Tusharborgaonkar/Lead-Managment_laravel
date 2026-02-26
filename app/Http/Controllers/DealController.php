@@ -15,12 +15,20 @@ class DealController extends Controller
     {
         $stats = (object)[
             'total_deals' => Deal::count(),
-            'won_value' => '$' . number_format(Deal::where('stage', 'Won')->sum('value')),
+            'won_value' => '$' . number_format(Deal::won()->sum('value')),
             'pipeline_value' => '$' . number_format(Deal::where('stage', '!=', 'Won')->sum('value')),
-            'win_rate' => Deal::count() > 0 ? round((Deal::where('stage', 'Won')->count() / Deal::count()) * 100) . '%' : '0%',
+            'win_rate' => Deal::count() > 0 ? round((Deal::won()->count() / Deal::count()) * 100) . '%' : '0%',
             'won_trend' => '+0%'
         ];
 
+        // Fetch deals with customers grouped by stage
+        $pipeline = [
+            'Lead In' => Deal::with('customer')->where('stage', 'Lead In')->get(),
+            'Contact Made' => Deal::with('customer')->where('stage', 'Contact Made')->get(),
+            'Needs Defined' => Deal::with('customer')->where('stage', 'Needs Defined')->get(),
+            'Proposal Made' => Deal::with('customer')->where('stage', 'Proposal Made')->get(),
+            'Negotiations' => Deal::with('customer')->where('stage', 'Negotiations')->get(),
+        ];
         $pipelineChart = [
             ['stage' => 'Prospect', 'value' => Deal::where('stage', 'Prospect')->count(), 'color' => '#6366f1'],
             ['stage' => 'Qualified', 'value' => Deal::where('stage', 'Qualified')->count(), 'color' => '#10b981'],
@@ -36,7 +44,8 @@ class DealController extends Controller
 
     public function create()
     {
-        return view('deals.create');
+        $customers = \App\Models\Customer::select('id', 'name', 'company')->get();
+        return view('deals.create', compact('customers'));
     }
 
     public function store(StoreDealRequest $request)
@@ -52,7 +61,8 @@ class DealController extends Controller
     public function edit($id)
     {
         $deal = Deal::findOrFail($id);
-        return view('deals.edit', compact('deal'));
+        $customers = \App\Models\Customer::select('id', 'name', 'company')->get();
+        return view('deals.edit', compact('deal', 'customers'));
     }
 
     public function update(UpdateDealRequest $request, $id)
@@ -65,6 +75,9 @@ class DealController extends Controller
 
     public function destroy($id)
     {
-        return redirect()->route('deals.index')->with('success', 'Deal deleted successfully (Static Mock).');
+        $deal = Deal::findOrFail($id);
+        $deal->delete();
+
+        return redirect()->route('deals.index')->with('success', 'Deal deleted successfully.');
     }
 }

@@ -43,16 +43,17 @@ Route::resource('leads', LeadController::class);
 Route::resource('customers', CustomerController::class)->only(['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']);
 
 // Follow-ups
-Route::get('/followups', [FollowupController::class , 'index'])->name('followups.index');
 Route::get('/followups/all', [FollowupController::class , 'all'])->name('followups.all');
 Route::get('/followups/calendar', [FollowupController::class , 'calendar'])->name('followups.calendar');
-Route::delete('/followups/{id}', [FollowupController::class , 'destroy'])->name('followups.destroy');
+Route::resource('followups', FollowupController::class)->except(['show']);
 
 // Deals
 Route::resource('deals', DealController::class);
 
 // Activity Log
 Route::get('/activity', [ActivityLogController::class , 'index'])->name('activity.index');
+Route::put('/activity/{id}', [ActivityLogController::class , 'update'])->name('activity.update');
+Route::delete('/activity/{id}', [ActivityLogController::class , 'destroy'])->name('activity.destroy');
 
 // Notifications
 Route::prefix('notifications')->name('notifications.')->group(function () {

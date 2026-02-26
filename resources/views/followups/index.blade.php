@@ -30,6 +30,10 @@
                 </div>
             </div>
         </div>
+        <a href="{{ route('followups.create') }}" class="flex items-center gap-2.5 px-6 py-2.5 bg-indigo-600 text-white rounded-2xl text-sm font-black shadow-lg shadow-indigo-500/25 hover:bg-indigo-700 transition active:scale-95">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            New Follow-up
+        </a>
     </div>
 </div>
 
@@ -37,6 +41,11 @@
     <div class="crm-table-wrapper overflow-x-auto">
         <div id="followups-table"></div>
     </div>
+    @if($followups->hasPages())
+    <div class="px-8 py-6 border-t border-slate-50 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
+        {{ $followups->links() }}
+    </div>
+    @endif
 </div>
 
 {{-- Hidden delete forms for SweetAlert --}}
@@ -48,7 +57,7 @@
 
 @php
     $followupsData = $followups->map(function($followup) {
-        $diff = now()->startOfDay()->diffInDays($followup->followup_at->startOfDay(), false);
+        $diff = now()->startOfDay()->diffInDays($followup->scheduled_at->startOfDay(), false);
         $badgeClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
         $text = "in $diff days";
         if ($diff == 0) { $badgeClass = 'bg-amber-50 text-amber-600 border-amber-100'; $text = 'Today'; }
@@ -57,11 +66,11 @@
 
         return [
             'id' => $followup->id,
-            'lead_name' => $followup->lead_name,
-            'contact_person' => $followup->contact_person,
+            'lead_name' => $followup->lead->name ?? $followup->customer->name ?? 'N/A',
+            'contact_person' => $followup->lead->company ?? $followup->customer->company ?? 'N/A',
             'description' => $followup->description,
-            'followup_date' => $followup->followup_at->format('d M Y'),
-            'followup_time' => $followup->followup_at->format('H:i'),
+            'followup_date' => $followup->scheduled_at->format('d M Y'),
+            'followup_time' => $followup->scheduled_at->format('H:i'),
             'followup_badge_class' => $badgeClass,
             'followup_badge_text' => $text,
             'status' => $followup->status,
@@ -125,8 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
             formatter: function(cell) {
                 var d = cell.getData();
                 return '<div class="flex items-center justify-end gap-2">' +
-                    '<button class="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm border border-transparent hover:border-indigo-100" title="Complete Follow-up"><i data-lucide="check-check" class="w-4 h-4"></i></button>' +
-                    '<button type="button" class="swal-delete p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm border border-transparent hover:border-rose-100" data-form-id="delete-followup-' + d.id + '" data-name="follow-up for ' + d.lead_name + '" title="Dismiss"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>' +
+                    '<a href="/followups/' + d.id + '/edit" class="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm border border-transparent hover:border-indigo-100" title="Edit Follow-up"><i data-lucide="pencil" class="w-4 h-4"></i></a>' +
+                    '<button type="button" class="swal-delete p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm border border-transparent hover:border-rose-100" data-form-id="delete-followup-' + d.id + '" data-name="follow-up for ' + d.lead_name + '" title="Delete"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>' +
                 '</div>';
             }
         }

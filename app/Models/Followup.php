@@ -46,12 +46,12 @@ class Followup extends Model
 
     public function assignedTo(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        return $this->belongsTo(User::class , 'assigned_to');
     }
 
     public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class , 'created_by');
     }
 
     public function notes(): HasMany
@@ -80,5 +80,21 @@ class Followup extends Model
             'status' => 'Completed',
             'completed_at' => now(),
         ]);
+    }
+
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('status', 'Pending');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'Completed');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'Cancelled');
     }
 }

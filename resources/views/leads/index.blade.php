@@ -148,6 +148,12 @@
         <div class="crm-table-wrapper overflow-x-auto overflow-y-visible">
             <div id="leads-table"></div>
         </div>
+
+        @if($leads->hasPages())
+        <div class="px-8 py-6 border-t border-slate-50 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
+            {{ $leads->links() }}
+        </div>
+        @endif
     </div>
 </div>
 
