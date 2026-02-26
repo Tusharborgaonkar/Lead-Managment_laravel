@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lead;
+use App\Http\Requests\StoreLeadRequest;
+use App\Http\Requests\UpdateLeadRequest;
 class LeadController extends Controller
 {
     /**
@@ -33,9 +35,16 @@ class LeadController extends Controller
         return view('leads.create', compact('agents'));
     }
 
-    public function store(Request $request)
+    public function store(StoreLeadRequest $request)
     {
-        return redirect()->route('leads.index')->with('success', 'Lead created successfully (Static Mock).');
+        $validated = $request->validated();
+
+        // Add auth user context
+        $validated['created_by'] = auth()->id() ?? 1;
+
+        Lead::create($validated);
+
+        return redirect()->route('leads.index')->with('success', 'Lead created successfully.');
     }
 
     public function show($id)
@@ -51,9 +60,16 @@ class LeadController extends Controller
         return view('leads.edit', compact('lead', 'agents'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateLeadRequest $request, $id)
     {
-        return redirect()->route('leads.index')->with('success', 'Lead updated successfully (Static Mock).');
+        $lead = Lead::findOrFail($id);
+
+        $validated = $request->validated();
+        $validated['updated_by'] = auth()->id() ?? 1;
+
+        $lead->update($validated);
+
+        return redirect()->route('leads.index')->with('success', 'Lead updated successfully.');
     }
 
     public function destroy($id)

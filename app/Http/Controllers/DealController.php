@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Deal;
+use App\Http\Requests\StoreDealRequest;
+use App\Http\Requests\UpdateDealRequest;
 class DealController extends Controller
 {
     /**
@@ -37,9 +39,14 @@ class DealController extends Controller
         return view('deals.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreDealRequest $request)
     {
-        return redirect()->route('deals.index')->with('success', 'Deal created successfully (Static Mock).');
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id() ?? 1;
+
+        Deal::create($validated);
+
+        return redirect()->route('deals.index')->with('success', 'Deal created successfully.');
     }
 
     public function edit($id)
@@ -48,9 +55,12 @@ class DealController extends Controller
         return view('deals.edit', compact('deal'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateDealRequest $request, $id)
     {
-        return redirect()->route('deals.index')->with('success', 'Deal updated successfully (Static Mock).');
+        $deal = Deal::findOrFail($id);
+        $deal->update($request->validated());
+
+        return redirect()->route('deals.index')->with('success', 'Deal updated successfully.');
     }
 
     public function destroy($id)

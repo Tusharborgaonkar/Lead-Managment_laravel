@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Followup;
+use App\Http\Requests\StoreFollowupRequest;
+use App\Http\Requests\UpdateFollowupRequest;
 
 class FollowupController extends Controller
 {
@@ -163,6 +166,28 @@ class FollowupController extends Controller
         ]);
 
         return view('followups.calendar', compact('events'));
+    }
+
+    public function store(StoreFollowupRequest $request)
+    {
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id() ?? 1;
+
+        Followup::create($validated);
+
+        return redirect()->route('followups.index')
+            ->with('success', 'Follow-up created successfully.');
+    }
+
+    public function update(UpdateFollowupRequest $request, $id)
+    {
+        $followup = Followup::findOrFail($id);
+
+        $validated = $request->validated();
+        $followup->update($validated);
+
+        return redirect()->route('followups.index')
+            ->with('success', 'Follow-up updated successfully.');
     }
 
     public function destroy($id)

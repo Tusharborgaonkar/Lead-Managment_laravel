@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 class CustomerController extends Controller
 {
     /**
@@ -41,14 +43,26 @@ class CustomerController extends Controller
         return view('customers.show', compact('customer'));
     }
 
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
-        return redirect()->route('customers.index')->with('success', 'Customer created successfully (Static Mock).');
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id() ?? 1;
+
+        Customer::create($validated);
+
+        return redirect()->route('customers.index')->with('success', 'Customer created successfully.');
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateCustomerRequest $request, $id)
     {
-        return redirect()->route('customers.index')->with('success', 'Customer updated successfully (Static Mock).');
+        $customer = Customer::findOrFail($id);
+
+        $validated = $request->validated();
+        $validated['updated_by'] = auth()->id() ?? 1;
+
+        $customer->update($validated);
+
+        return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
     }
 
     public function destroy($id)

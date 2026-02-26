@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{User, Role};
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     /**
@@ -17,14 +20,32 @@ class UserController extends Controller
         return view('users.index', compact('users', 'roles'));
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        return redirect()->route('users.index')->with('success', 'User created successfully (Static Mock).');
+        $validated = $request->validated();
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
-        return redirect()->route('users.index')->with('success', 'User updated successfully (Static Mock).');
+        $user = User::findOrFail($id);
+
+        $validated = $request->validated();
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        }
+        else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
     public function destroy($id)
