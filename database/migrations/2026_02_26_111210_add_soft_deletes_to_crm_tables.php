@@ -12,23 +12,33 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leads', function (Blueprint $table) {
-            $table->softDeletes();
+            if (!Schema::hasColumn('leads', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
 
         Schema::table('customers', function (Blueprint $table) {
-            $table->softDeletes();
+            if (!Schema::hasColumn('customers', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
 
         Schema::table('deals', function (Blueprint $table) {
-            $table->softDeletes();
+            if (!Schema::hasColumn('deals', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
 
         Schema::table('followups', function (Blueprint $table) {
-            $table->softDeletes();
+            if (!Schema::hasColumn('followups', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
 
         Schema::table('notes', function (Blueprint $table) {
-            $table->softDeletes();
+            if (!Schema::hasColumn('notes', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
     }
 
