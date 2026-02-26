@@ -61,9 +61,9 @@ class DashboardController extends Controller
             ];
         });
 
-        $todayFollowups = Followup::whereDate('followup_at', today())->limit(4)->get()->map(function ($fup) {
+        $todayFollowups = Followup::with('lead')->whereDate('scheduled_at', today())->limit(4)->get()->map(function ($fup) {
             return (object)[
-            'time' => $fup->followup_at->format('H:i'),
+            'time' => $fup->scheduled_at->format('H:i'),
             'task' => $fup->description,
             'lead' => $fup->lead_name ?? ($fup->lead->name ?? 'Unknown')
             ];
