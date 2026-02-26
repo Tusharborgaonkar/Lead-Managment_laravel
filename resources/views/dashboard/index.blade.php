@@ -403,19 +403,23 @@
         </div>
         <div class="p-6">
             <div class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-100 before:to-transparent">
-                @foreach($recentActivities as $act)
+                @foreach($recentActivities as $activity)
                 <div class="relative flex items-center justify-between group">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full bg-{{ $act->color }}-50 dark:bg-{{ $act->color }}-900/20 flex items-center justify-center flex-shrink-0 z-10 border-4 border-white dark:border-slate-800 shadow-sm transition-transform group-hover:scale-110">
-                            <i data-lucide="{{ $act->icon }}" class="w-4 h-4 text-{{ $act->color }}-500"></i>
+                        <div class="w-10 h-10 rounded-full bg-{{ $activity->color }}-50 dark:bg-{{ $activity->color }}-900/20 flex items-center justify-center flex-shrink-0 z-10 border-4 border-white dark:border-slate-800 shadow-sm transition-transform group-hover:scale-110">
+                            <i data-lucide="{{ $activity->icon }}" class="w-4 h-4 text-{{ $activity->color }}-500"></i>
                         </div>
-                        <div>
-                            <p class="text-[13px] text-slate-600 dark:text-slate-300">
-                                <span class="font-black text-slate-800 dark:text-white">{{ $act->user }}</span> 
-                                {{ $act->action }} <span class="font-bold text-indigo-500">{{ $act->target }}</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-bold text-slate-800 dark:text-white capitalize">
+                                {{ $activity->user }}
                             </p>
-                            <span class="text-[10px] font-bold text-slate-400 mt-1 uppercase">{{ $act->time }}</span>
+                            <p class="text-[13px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                {{ $activity->action }} <span class="font-medium text-slate-700 dark:text-slate-300">{{ $activity->target }}</span>
+                            </p>
                         </div>
+                    </div>
+                    <div class="text-xs font-bold text-slate-400 whitespace-nowrap">
+                        {{ $activity->time }}
                     </div>
                 </div>
                 @endforeach
