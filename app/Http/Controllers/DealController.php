@@ -13,18 +13,11 @@ class DealController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Deal::query();
+        $query = Deal::with(['customer', 'owner']);
 
-        // Search in title, customer name, company
+        // Search
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($cq) use ($search) {
-                      $cq->where('name', 'like', "%{$search}%")
-                         ->orWhere('company', 'like', "%{$search}%");
-                  });
-            });
+            $query->search($request->search);
         }
 
         // Filter by Stage
@@ -32,12 +25,19 @@ class DealController extends Controller
             $query->where('stage', $request->stage);
         }
 
+        $thisMonthWon = Deal::where('stage', 'Won')->whereMonth('created_at', now()->month)->count();
+        $lastMonthWon = Deal::where('stage', 'Won')
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count() ?: 1;
+        $trendValue = (($thisMonthWon - $lastMonthWon) / $lastMonthWon) * 100;
+
         $stats = (object)[
             'total_deals' => Deal::count(),
             'won_value' => '$' . number_format(Deal::where('stage', 'Won')->sum('value')),
             'pipeline_value' => '$' . number_format(Deal::where('stage', '!=', 'Won')->sum('value')),
             'win_rate' => Deal::count() > 0 ? round((Deal::where('stage', 'Won')->count() / Deal::count()) * 100) . '%' : '0%',
-            'won_trend' => '+0%'
+            'won_trend' => ($trendValue >= 0 ? '+' : '') . round($trendValue) . '%'
         ];
 
         $pipelineChart = [
@@ -48,7 +48,7 @@ class DealController extends Controller
             ['stage' => 'Won', 'value' => Deal::where('stage', 'Won')->count(), 'color' => '#22c55e'],
         ];
 
-        $deals = $query->with('customer')->latest()->get()->groupBy('stage');
+        $deals = $query->latest()->get()->groupBy('stage');
 
         return view('deals.index', compact('stats', 'pipelineChart', 'deals'));
     }

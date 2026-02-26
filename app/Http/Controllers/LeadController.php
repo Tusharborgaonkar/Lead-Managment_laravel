@@ -13,31 +13,21 @@ class LeadController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Lead::query();
+        $query = Lead::with(['assignedTo', 'createdBy']);
 
-        // Search in name, email, company, phone
+        // Search
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('company', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
-            });
+            $query->search($request->search);
         }
 
         // Filter by Category
         if ($request->filled('category') && $request->category !== 'all') {
-            if ($request->category === 'notes') {
-                $query->where('has_notes', true);
-            } else {
-                $query->where('category', $request->category);
-            }
+            $query->filterByCategory($request->category);
         }
 
         // Filter by Source
         if ($request->filled('source') && $request->source !== 'All Sources') {
-            $query->where('source', $request->source);
+            $query->filterBySource($request->source);
         }
 
         $stats = (object)[
@@ -47,8 +37,8 @@ class LeadController extends Controller
             'pending' => Lead::pending()->count(),
             'confirm' => Lead::where('category', 'Confirm')->count(),
             'has_notes' => Lead::where('has_notes', true)->count(),
-            'notes_added_today' => 0,
-            'notes_categories_count' => 0
+            'notes_added_today' => \App\Models\Note::whereDate('created_at', today())->count(),
+            'notes_categories_count' => \App\Models\Note::distinct('category')->count('category')
         ];
 
         $leads = $query->latest()->paginate(10);
@@ -58,7 +48,7 @@ class LeadController extends Controller
 
     public function create()
     {
-        $agents = \App\Models\User::all();
+        $agents = \App\Models\User::where('is_active', true)->get();
         return view('leads.create', compact('agents'));
     }
 
@@ -76,7 +66,7 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        $lead = Lead::findOrFail($id);
+        $lead = Lead::with(['customer', 'deals', 'followups', 'notes.createdBy', 'activityLogs.user'])->findOrFail($id);
         return view('leads.show', compact('lead'));
     }
 

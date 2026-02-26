@@ -12,20 +12,28 @@ class FollowupController extends Controller
     /**
      * Display a listing of follow-ups.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $followups = Followup::with(['lead', 'customer'])
-            ->pending()
-            ->whereDate('scheduled_at', '<', now()->toDateString())
-            ->latest('scheduled_at')
-            ->paginate(10);
+        $query = Followup::with(['lead', 'customer', 'assignedTo'])->pending();
+
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+
+        if ($request->filled('date')) {
+            $query->scheduledFor($request->date);
+        } else {
+            $query->whereDate('scheduled_at', '<', now()->toDateString());
+        }
+
+        $followups = $query->latest('scheduled_at')->paginate(10);
 
         return view('followups.index', compact('followups'));
     }
 
     public function all()
     {
-        $followups = Followup::with(['lead', 'customer'])
+        $followups = Followup::with(['lead', 'customer', 'assignedTo'])
             ->latest('scheduled_at')
             ->paginate(10);
 

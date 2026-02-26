@@ -101,4 +101,27 @@ class Lead extends Model
     {
         return $query->where('category', 'Pending');
     }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('company', 'like', "%{$search}%")
+              ->orWhere('phone', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeFilterByCategory($query, $category)
+    {
+        if ($category === 'notes') {
+            return $query->where('has_notes', true);
+        }
+        return $query->where('category', $category);
+    }
+
+    public function scopeFilterBySource($query, $source)
+    {
+        return $query->where('source', $source);
+    }
 }

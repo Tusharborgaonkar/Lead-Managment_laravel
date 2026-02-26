@@ -50,7 +50,12 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        return redirect()->route('users.index')->with('success', 'User deleted successfully (Static Mock).');
+        $user = User::findOrFail($id);
+        if ($user->id === auth()->id()) {
+            return redirect()->route('users.index')->with('error', 'You cannot delete yourself.');
+        }
+        $user->delete();
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 
     public function roles()
@@ -62,11 +67,22 @@ class UserController extends Controller
 
     public function storeRole(Request $request)
     {
-        return redirect()->route('users.roles')->with('success', 'Role created successfully (Static Mock).');
+        $validated = $request->validate([
+            'name' => 'required|string|unique:roles,name',
+            'description' => 'nullable|string'
+        ]);
+        $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
+        Role::create($validated);
+        return redirect()->route('users.roles')->with('success', 'Role created successfully.');
     }
 
     public function destroyRole($id)
     {
-        return redirect()->route('users.roles')->with('success', 'Role deleted successfully (Static Mock).');
+        $role = Role::findOrFail($id);
+        if ($role->users()->count() > 0) {
+            return redirect()->route('users.roles')->with('error', 'Cannot delete role assigned to users.');
+        }
+        $role->delete();
+        return redirect()->route('users.roles')->with('success', 'Role deleted successfully.');
     }
 }

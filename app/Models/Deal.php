@@ -104,4 +104,15 @@ class Deal extends Model
     {
         return $query->where('stage', 'Open');
     }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+              ->orWhereHas('customer', function($cq) use ($search) {
+                  $cq->where('name', 'like', "%{$search}%")
+                     ->orWhere('company', 'like', "%{$search}%");
+              });
+        });
+    }
 }

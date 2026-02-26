@@ -99,4 +99,19 @@ class Followup extends Model
     {
         return $query->where('status', 'Cancelled');
     }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%")
+              ->orWhereHas('lead', fn($l) => $l->where('name', 'like', "%{$search}%"))
+              ->orWhereHas('customer', fn($c) => $c->where('name', 'like', "%{$search}%"));
+        });
+    }
+
+    public function scopeScheduledFor($query, $date)
+    {
+        return $query->whereDate('scheduled_at', $date);
+    }
 }

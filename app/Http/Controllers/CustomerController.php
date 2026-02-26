@@ -15,15 +15,9 @@ class CustomerController extends Controller
     {
         $query = Customer::query();
 
-        // Search in name, email, company, phone
+        // Search
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('company', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
-            });
+            $query->search($request->search);
         }
 
         // Filter by Status
@@ -36,13 +30,21 @@ class CustomerController extends Controller
             $query->where('group', $request->group);
         }
 
+        $thisMonthCustomers = Customer::whereMonth('created_at', now()->month)->count();
+        $lastMonthCustomers = Customer::whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count() ?: 1;
+        $trendValue = (($thisMonthCustomers - $lastMonthCustomers) / $lastMonthCustomers) * 100;
+
         $stats = (object)[
             'total' => Customer::count(),
             'active' => Customer::where('status', 'active')->count(),
             'avg_value' => '$' . number_format(Customer::avg('total_spent') ?? 0, 2),
-            'retention' => '68%',
-            'pending' => 0, // Fixing potential error if pending scope is invalid
-            'trend' => '+8.3%'
+            'retention' => Customer::has('deals', '>', 1)->count() > 0 
+                ? round((Customer::has('deals', '>', 1)->count() / (Customer::count() ?: 1)) * 100) . '%' 
+                : '0%',
+            'pending' => Customer::where('status', 'pending')->count(),
+            'trend' => ($trendValue >= 0 ? '+' : '') . round($trendValue, 1) . '%'
         ];
 
         $customers = $query->latest()->paginate(10);
@@ -63,7 +65,7 @@ class CustomerController extends Controller
 
     public function show($id)
     {
-        $customer = Customer::with('deals')->findOrFail($id);
+        $customer = Customer::with(['deals', 'leads', 'notes.createdBy', 'activityLogs.user'])->findOrFail($id);
         return view('customers.show', compact('customer'));
     }
 
