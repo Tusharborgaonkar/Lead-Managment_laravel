@@ -8,11 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -61,32 +60,32 @@ class User extends Authenticatable
 
     public function leads(): HasMany
     {
-        return $this->hasMany(Lead::class, 'assigned_to');
+        return $this->hasMany(Lead::class , 'assigned_to');
     }
 
     public function createdLeads(): HasMany
     {
-        return $this->hasMany(Lead::class, 'created_by');
+        return $this->hasMany(Lead::class , 'created_by');
     }
 
     public function deals(): HasMany
     {
-        return $this->hasMany(Deal::class, 'owner_id');
+        return $this->hasMany(Deal::class , 'owner_id');
     }
 
     public function createdDeals(): HasMany
     {
-        return $this->hasMany(Deal::class, 'created_by');
+        return $this->hasMany(Deal::class , 'created_by');
     }
 
     public function followups(): HasMany
     {
-        return $this->hasMany(Followup::class, 'assigned_to');
+        return $this->hasMany(Followup::class , 'assigned_to');
     }
 
     public function createdFollowups(): HasMany
     {
-        return $this->hasMany(Followup::class, 'created_by');
+        return $this->hasMany(Followup::class , 'created_by');
     }
 
     public function notifications(): HasMany

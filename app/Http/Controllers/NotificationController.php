@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-
+use App\Models\Notification;
 class NotificationController extends Controller
 {
     /**
@@ -12,27 +11,34 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = collect([
-            (object)['id' => 1, 'text' => 'New lead assigned: John Doe', 'is_read' => false, 'created_at' => now()->subMinutes(15)],
-            (object)['id' => 2, 'text' => 'Deal won: Alpha Corp', 'is_read' => true, 'created_at' => now()->subHours(1)],
-        ]);
+        $notifications = Notification::where('user_id', auth()->id() ?? 1)
+            ->latest()
+            ->paginate(15);
 
         return view('notifications.index', compact('notifications'));
     }
 
     public function markRead($id)
     {
-        return back()->with('success', 'Notification marked as read (Static Mock).');
+        $notification = Notification::where('user_id', auth()->id() ?? 1)->findOrFail($id);
+        $notification->markAsRead();
+        return back()->with('success', 'Notification marked as read.');
     }
 
     public function markAllRead()
     {
-        return back()->with('success', 'All notifications marked as read (Static Mock).');
+        Notification::where('user_id', auth()->id() ?? 1)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return back()->with('success', 'All notifications marked as read.');
     }
 
     public function destroy($id)
     {
-        return back()->with('success', 'Notification deleted (Static Mock).');
+        $notification = Notification::where('user_id', auth()->id() ?? 1)->findOrFail($id);
+        $notification->delete();
+
+        return back()->with('success', 'Notification deleted.');
     }
 }
-

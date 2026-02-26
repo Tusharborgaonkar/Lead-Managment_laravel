@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-
+use App\Models\Deal;
 class DealController extends Controller
 {
     /**
@@ -13,50 +12,22 @@ class DealController extends Controller
     public function index()
     {
         $stats = (object)[
-            'total_deals' => 77,
-            'won_value' => '$624K',
-            'pipeline_value' => '$342K',
-            'win_rate' => '34%',
-            'won_trend' => '+18%'
+            'total_deals' => Deal::count(),
+            'won_value' => '$' . number_format(Deal::where('stage', 'Won')->sum('value')),
+            'pipeline_value' => '$' . number_format(Deal::where('stage', '!=', 'Won')->sum('value')),
+            'win_rate' => Deal::count() > 0 ? round((Deal::where('stage', 'Won')->count() / Deal::count()) * 100) . '%' : '0%',
+            'won_trend' => '+0%'
         ];
 
         $pipelineChart = [
-            ['stage' => 'Prospect', 'value' => 60, 'color' => '#6366f1'],
-            ['stage' => 'Qualified', 'value' => 140, 'color' => '#10b981'],
-            ['stage' => 'Proposal', 'value' => 160, 'color' => '#f59e0b'],
-            ['stage' => 'Negotiation', 'value' => 45, 'color' => '#f97316'],
-            ['stage' => 'Won', 'value' => 180, 'color' => '#22c55e'],
+            ['stage' => 'Prospect', 'value' => Deal::where('stage', 'Prospect')->count(), 'color' => '#6366f1'],
+            ['stage' => 'Qualified', 'value' => Deal::where('stage', 'Qualified')->count(), 'color' => '#10b981'],
+            ['stage' => 'Proposal', 'value' => Deal::where('stage', 'Proposal')->count(), 'color' => '#f59e0b'],
+            ['stage' => 'Negotiation', 'value' => Deal::where('stage', 'Negotiation')->count(), 'color' => '#f97316'],
+            ['stage' => 'Won', 'value' => Deal::where('stage', 'Won')->count(), 'color' => '#22c55e'],
         ];
 
-        $deals = [
-            'Prospect' => [
-                (object)['id' => 101, 'title' => 'Website Redesign', 'value' => '$15,000', 'client' => 'Acme Corp', 'color' => 'indigo'],
-                (object)['id' => 102, 'title' => 'Mobile App Dev', 'value' => '$48,000', 'client' => 'TechStart Inc', 'color' => 'violet'],
-                (object)['id' => 103, 'title' => 'SEO Audit', 'value' => '$5,000', 'client' => 'Miller Industries', 'color' => 'blue'],
-                (object)['id' => 104, 'title' => 'Branding Package', 'value' => '$8,500', 'client' => 'Wilson Design', 'color' => 'sky'],
-                (object)['id' => 105, 'title' => 'Social Media Strategy', 'value' => '$3,000', 'client' => 'Apex Media', 'color' => 'indigo'],
-            ],
-            'Qualified' => [
-                (object)['id' => 201, 'title' => 'Enterprise CRM', 'value' => '$85,000', 'client' => 'DataFlow Ltd', 'color' => 'emerald'],
-                (object)['id' => 202, 'title' => 'Cloud Migration', 'value' => '$62,000', 'client' => 'CloudNine', 'color' => 'teal'],
-                (object)['id' => 203, 'title' => 'Data Analysis', 'value' => '$20,000', 'client' => 'Anderson Logistics', 'color' => 'indigo'],
-                (object)['id' => 204, 'title' => 'Security Upgrade', 'value' => '$12,000', 'client' => 'Martin Law', 'color' => 'slate'],
-            ],
-            'Proposal' => [
-                (object)['id' => 301, 'title' => 'Data Analytics Suite', 'value' => '$120,000', 'client' => 'GreenLeaf Bio', 'color' => 'amber'],
-                (object)['id' => 302, 'title' => 'API Integration', 'value' => '$35,000', 'client' => 'NexGen Labs', 'color' => 'indigo'],
-                (object)['id' => 303, 'title' => 'Consulting Retainer', 'value' => '$10,000', 'client' => 'White Architecture', 'color' => 'blue'],
-            ],
-            'Negotiation' => [
-                (object)['id' => 401, 'title' => 'Security Audit', 'value' => '$28,000', 'client' => 'Stellar Mktg', 'color' => 'orange'],
-                (object)['id' => 402, 'title' => 'Licensing Agreement', 'value' => '$50,000', 'client' => 'Scott Holdings', 'color' => 'indigo'],
-            ],
-            'Won' => [
-                (object)['id' => 501, 'title' => 'Platform License', 'value' => '$95,000', 'client' => 'InnovateTech', 'color' => 'emerald'],
-                (object)['id' => 502, 'title' => 'Annual Contract', 'value' => '$72,000', 'client' => 'BluePeak Co', 'color' => 'indigo'],
-                (object)['id' => 503, 'title' => 'Upgrade Package', 'value' => '$30,000', 'client' => 'King Enterprises', 'color' => 'violet'],
-            ],
-        ];
+        $deals = Deal::latest()->get()->groupBy('stage');
 
         return view('deals.index', compact('stats', 'pipelineChart', 'deals'));
     }
@@ -73,14 +44,7 @@ class DealController extends Controller
 
     public function edit($id)
     {
-        // Simple mock for editing
-        $deal = (object)[
-            'id' => $id,
-            'title' => 'Sample Deal',
-            'value' => '10000',
-            'client' => 'Sample Client',
-            'stage' => 'Prospect'
-        ];
+        $deal = Deal::findOrFail($id);
         return view('deals.edit', compact('deal'));
     }
 
@@ -94,4 +58,3 @@ class DealController extends Controller
         return redirect()->route('deals.index')->with('success', 'Deal deleted successfully (Static Mock).');
     }
 }
-

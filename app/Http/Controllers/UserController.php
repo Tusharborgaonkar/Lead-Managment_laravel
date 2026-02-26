@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-
+use App\Models\{User, Role};
 class UserController extends Controller
 {
     /**
@@ -12,12 +11,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = collect([
-            (object)['id' => 1, 'name' => 'Admin User', 'email' => 'admin@crm.com', 'status' => 'active', 'role' => (object)['name' => 'Admin'], 'created_at' => now()->subMonths(6)],
-            (object)['id' => 2, 'name' => 'Agent Smith', 'email' => 'smith@crm.com', 'status' => 'active', 'role' => (object)['name' => 'Agent'], 'created_at' => now()->subMonths(2)],
-        ]);
-
-        $roles = collect([(object)['id' => 1, 'name' => 'Admin'], (object)['id' => 2, 'name' => 'Agent']]);
+        $users = User::with('role')->latest()->paginate(10);
+        $roles = Role::all();
 
         return view('users.index', compact('users', 'roles'));
     }
@@ -39,10 +34,7 @@ class UserController extends Controller
 
     public function roles()
     {
-        $roles = collect([
-            (object)['id' => 1, 'name' => 'Admin', 'users_count' => 1, 'permissions' => ['*']],
-            (object)['id' => 2, 'name' => 'Agent', 'users_count' => 5, 'permissions' => ['leads.view', 'leads.edit']],
-        ]);
+        $roles = Role::withCount('users')->get();
 
         return view('users.roles', compact('roles'));
     }
@@ -57,4 +49,3 @@ class UserController extends Controller
         return redirect()->route('users.roles')->with('success', 'Role deleted successfully (Static Mock).');
     }
 }
-
