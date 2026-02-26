@@ -86,23 +86,31 @@
 
 <!-- Toolbar -->
 <div class="flex flex-wrap items-center gap-4 mb-6">
-    <div class="flex items-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-2.5 flex-1 max-w-md shadow-sm transition-all focus-within:border-slate-400 dark:focus-within:border-slate-500 focus-within:ring-0 focus-within:outline-none">
+    <form action="{{ route('customers.index') }}" method="GET" class="flex items-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-2.5 flex-1 max-w-md shadow-sm transition-all focus-within:border-slate-400 dark:focus-within:border-slate-500 focus-within:ring-0 focus-within:outline-none">
+        @foreach(request()->except('search', 'page') as $key => $value)
+            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+        @endforeach
         <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
-        <input type="text" id="customer-search" oninput="filterCustomers()" placeholder="Search customers..." class="bg-transparent border-none outline-none focus:ring-0 focus:outline-none text-sm text-slate-700 dark:text-slate-300 w-full placeholder:text-slate-400" />
-    </div>
+        <input type="text" name="search" id="customer-search" value="{{ request('search') }}" placeholder="Search customers..." class="bg-transparent border-none outline-none focus:ring-0 focus:outline-none text-sm text-slate-700 dark:text-slate-300 w-full placeholder:text-slate-400" />
+    </form>
 
     <div class="flex items-center gap-3 ml-auto">
-        <select id="filter-group" onchange="filterCustomers()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
-            <option value="all">All Groups</option>
-            <option value="Millennials">Millennials</option>
-            <option value="Generation Z">Generation Z</option>
-            <option value="Generation X">Generation X</option>
-        </select>
-        <select id="filter-status" onchange="filterCustomers()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-        </select>
+        <form action="{{ route('customers.index') }}" method="GET" class="flex items-center gap-3">
+            @foreach(request()->except('group', 'status', 'page') as $key => $value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endforeach
+            <select name="group" onchange="this.form.submit()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
+                <option value="all">All Groups</option>
+                <option value="Millennials" {{ request('group') === 'Millennials' ? 'selected' : '' }}>Millennials</option>
+                <option value="Generation Z" {{ request('group') === 'Generation Z' ? 'selected' : '' }}>Generation Z</option>
+                <option value="Generation X" {{ request('group') === 'Generation X' ? 'selected' : '' }}>Generation X</option>
+            </select>
+            <select name="status" onchange="this.form.submit()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
+                <option value="all">All Status</option>
+                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+            </select>
+        </form>
         <select id="customer-sort" onchange="sortCustomers()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
             <option value="newest">Sort by</option>
             <option value="newest">Newest</option>
@@ -119,7 +127,7 @@
     </div>
     @if($customers->hasPages())
     <div class="px-8 py-6 border-t border-slate-50 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
-        {{ $customers->links() }}
+        {{ $customers->appends(request()->query())->links() }}
     </div>
     @endif
 </div>
@@ -255,19 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function filterCustomers() {
-    if (!customersTable) return;
-    var search = document.getElementById('customer-search').value.toLowerCase();
-    var group = document.getElementById('filter-group').value;
-    var status = document.getElementById('filter-status').value;
-
-    customersTable.setFilter(function(data) {
-        var matchesSearch = !search ||
-            data.name.toLowerCase().includes(search) ||
-            data.email.toLowerCase().includes(search);
-        var matchesGroup = group === 'all' || data.group === group;
-        var matchesStatus = status === 'all' || data.status === status;
-        return matchesSearch && matchesGroup && matchesStatus;
-    });
+    // No-op for customers as it's now server-side
 }
 
 function sortCustomers() {

@@ -11,8 +11,35 @@ class LeadController extends Controller
     /**
      * Display a listing of leads.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Lead::query();
+
+        // Search in name, email, company, phone
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('company', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by Category
+        if ($request->filled('category') && $request->category !== 'all') {
+            if ($request->category === 'notes') {
+                $query->where('has_notes', true);
+            } else {
+                $query->where('category', $request->category);
+            }
+        }
+
+        // Filter by Source
+        if ($request->filled('source') && $request->source !== 'All Sources') {
+            $query->where('source', $request->source);
+        }
+
         $stats = (object)[
             'total' => Lead::count(),
             'not_interested' => Lead::where('category', 'Not Interested')->count(),
@@ -24,7 +51,7 @@ class LeadController extends Controller
             'notes_categories_count' => 0
         ];
 
-        $leads = Lead::latest()->paginate(10);
+        $leads = $query->latest()->paginate(10);
 
         return view('leads.index', compact('leads', 'stats'));
     }

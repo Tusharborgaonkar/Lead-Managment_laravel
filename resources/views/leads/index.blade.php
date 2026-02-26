@@ -35,30 +35,30 @@
 
 {{-- Filters Row --}}
 <div class="flex flex-wrap items-center gap-3 mb-8">
-    <button id="filter-all" onclick="filterByCategory('all')" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 active-filter">
+    <a href="{{ route('leads.index', array_merge(request()->query(), ['category' => 'all', 'page' => 1])) }}" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 {{ request('category', 'all') === 'all' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active-filter' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400' }} rounded-2xl text-xs font-black uppercase tracking-widest transition-all">
         <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
         All Leads <span class="ml-1 opacity-70">{{ $stats->total }}</span>
-    </button>
-    <button id="filter-NotInterested" onclick="filterByCategory('Not Interested')" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 transition-all">
+    </a>
+    <a href="{{ route('leads.index', array_merge(request()->query(), ['category' => 'Not Interested', 'page' => 1])) }}" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 {{ request('category') === 'Not Interested' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active-filter' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400' }} rounded-2xl text-xs font-bold hover:bg-slate-50 transition-all">
         <i data-lucide="x" class="w-3.5 h-3.5 text-rose-500"></i>
         Not Interested <span class="px-1.5 py-0.5 rounded-md bg-rose-50 text-rose-600 ml-1 text-[10px]">{{ $stats->not_interested }}</span>
-    </button>
-    <button id="filter-Followup" onclick="filterByCategory('Followup')" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 transition-all">
+    </a>
+    <a href="{{ route('leads.index', array_merge(request()->query(), ['category' => 'Followup', 'page' => 1])) }}" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 {{ request('category') === 'Followup' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active-filter' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400' }} rounded-2xl text-xs font-bold hover:bg-slate-50 transition-all">
         <i data-lucide="phone" class="w-3.5 h-3.5 text-amber-500"></i>
         Followup <span class="px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-600 ml-1 text-[10px]">{{ $stats->followup }}</span>
-    </button>
-    <button id="filter-Pending" onclick="filterByCategory('Pending')" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 transition-all">
+    </a>
+    <a href="{{ route('leads.index', array_merge(request()->query(), ['category' => 'Pending', 'page' => 1])) }}" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 {{ request('category') === 'Pending' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active-filter' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400' }} rounded-2xl text-xs font-bold hover:bg-slate-50 transition-all">
         <i data-lucide="history" class="w-3.5 h-3.5 text-sky-500"></i>
         Pending <span class="px-1.5 py-0.5 rounded-md bg-sky-50 text-sky-600 ml-1 text-[10px]">{{ $stats->pending }}</span>
-    </button>
-    <button id="filter-Confirm" onclick="filterByCategory('Confirm')" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 transition-all">
+    </a>
+    <a href="{{ route('leads.index', array_merge(request()->query(), ['category' => 'Confirm', 'page' => 1])) }}" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 {{ request('category') === 'Confirm' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active-filter' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400' }} rounded-2xl text-xs font-bold hover:bg-slate-50 transition-all">
         <i data-lucide="check-square" class="w-3.5 h-3.5 text-emerald-500"></i>
         Confirm <span class="px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-600 ml-1 text-[10px]">{{ $stats->confirm }}</span>
-    </button>
-    <button id="filter-notes" onclick="filterByCategory('notes')" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 transition-all">
+    </a>
+    <a href="{{ route('leads.index', array_merge(request()->query(), ['category' => 'notes', 'page' => 1])) }}" class="lead-filter-btn flex items-center gap-2 px-5 py-2.5 {{ request('category') === 'notes' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active-filter' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400' }} rounded-2xl text-xs font-bold hover:bg-slate-50 transition-all">
         <i data-lucide="file-edit" class="w-3.5 h-3.5 text-slate-500"></i>
         Notes <span class="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 ml-1 text-[10px]">{{ $stats->has_notes }}</span>
-    </button>
+    </a>
 </div>
 
 <div id="table-view-container">
@@ -131,16 +131,24 @@
                 <p class="text-xs text-slate-400 font-medium">Showing all leads in the system</p>
             </div>
             <div class="flex items-center gap-3">
-                <div class="relative min-w-[240px]">
+                <form action="{{ route('leads.index') }}" method="GET" class="relative min-w-[240px]">
+                    @foreach(request()->except('search', 'page') as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="lead-search" onkeyup="searchLeads()" placeholder="Search leads..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
-                </div>
-                <select class="pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl text-sm font-bold text-slate-500 appearance-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                    <option>All Sources</option>
-                    <option>Website</option>
-                    <option>Referral</option>
-                    <option>Social Media</option>
-                </select>
+                    <input type="text" name="search" id="lead-search" value="{{ request('search') }}" placeholder="Search leads..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                </form>
+                <form action="{{ route('leads.index') }}" method="GET">
+                    @foreach(request()->except('source', 'page') as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                    <select name="source" onchange="this.form.submit()" class="pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl text-sm font-bold text-slate-500 appearance-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                        <option value="All Sources" {{ request('source') === 'All Sources' ? 'selected' : '' }}>All Sources</option>
+                        @foreach(['Website', 'Referral', 'Social Media', 'Cold Call', 'WhatsApp', 'Events'] as $source)
+                            <option value="{{ $source }}" {{ request('source') === $source ? 'selected' : '' }}>{{ $source }}</option>
+                        @endforeach
+                    </select>
+                </form>
             </div>
         </div>
 
@@ -151,7 +159,7 @@
 
         @if($leads->hasPages())
         <div class="px-8 py-6 border-t border-slate-50 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50">
-            {{ $leads->links() }}
+            {{ $leads->appends(request()->query())->links() }}
         </div>
         @endif
     </div>
@@ -517,72 +525,21 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // --- Filter Logic (rewired to Tabulator) ---
-function filterByCategory(category) {
-    currentCategory = category;
-    var buttons = document.querySelectorAll('.lead-filter-btn');
+// Note: Category filtering is now handled server-side via links.
+// Local view toggling for 'notes' view is still needed.
+document.addEventListener('DOMContentLoaded', function() {
+    var category = "{{ request('category', 'all') }}";
     var tableContainer = document.getElementById('table-view-container');
     var notesContainer = document.getElementById('notes-view-container');
 
-    // Toggle View Containers
     if (category === 'notes') {
         tableContainer.classList.add('hidden');
         notesContainer.classList.remove('hidden');
-    } else {
-        tableContainer.classList.remove('hidden');
-        notesContainer.classList.add('hidden');
     }
-
-    // Update button styles
-    buttons.forEach(function(btn) {
-        btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-500/20', 'active-filter');
-        btn.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-500', 'dark:text-slate-400');
-    });
-
-    var activeBtn = document.getElementById('filter-' + category.replace(' ', ''));
-    if (activeBtn) {
-        activeBtn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-500', 'dark:text-slate-400');
-        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-500/20', 'active-filter');
-    }
-
-    if (category !== 'notes') {
-        applyFilters();
-    }
-
-    // Update table title
-    var title = document.getElementById('table-title');
-    if (title) title.innerText = category === 'all' ? 'All Leads' : category;
-}
-
-function searchLeads() {
-    applyFilters();
-}
+});
 
 function applyFilters() {
-    if (!leadsTable) return;
-    var searchInput = document.getElementById('lead-search');
-    var query = searchInput ? searchInput.value.toLowerCase() : '';
-
-    var filters = [];
-
-    if (currentCategory !== 'all') {
-        filters.push({ field: 'category', type: '=', value: currentCategory });
-    }
-
-    if (query) {
-        // Custom filter function for combined search
-        leadsTable.setFilter(function(data) {
-            var matchesCategory = currentCategory === 'all' || data.category === currentCategory;
-            var matchesSearch = !query ||
-                (data.name && data.name.toLowerCase().includes(query)) ||
-                (data.company && data.company.toLowerCase().includes(query)) ||
-                (data.email && data.email.toLowerCase().includes(query));
-            return matchesCategory && matchesSearch;
-        });
-    } else if (filters.length > 0) {
-        leadsTable.setFilter(filters);
-    } else {
-        leadsTable.clearFilter();
-    }
+    // No-op for leads as it's now server-side
 }
 
 function applyNotesFilters() {

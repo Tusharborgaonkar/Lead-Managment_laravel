@@ -10,6 +10,21 @@
             <p class="text-sm text-slate-400 mt-1 font-medium">Manage your sales pipeline and track deal progress</p>
         </div>
         <div class="flex items-center gap-3 relative">
+            <form action="{{ route('deals.index') }}" method="GET" class="flex items-center gap-3">
+                <div class="relative group">
+                    @foreach(request()->except('search', 'stage') as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search deals..." class="pl-11 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 rounded-2xl text-sm font-bold text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all w-64 shadow-sm">
+                </div>
+                <select name="stage" onchange="this.form.submit()" class="pl-4 pr-10 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 rounded-2xl text-sm font-bold text-slate-500 appearance-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 cursor-pointer shadow-sm">
+                    <option value="all">All Stages</option>
+                    @foreach(['Prospect', 'Qualified', 'Proposal', 'Negotiation', 'Won'] as $stage)
+                        <option value="{{ $stage }}" {{ request('stage') === $stage ? 'selected' : '' }}>{{ $stage }}</option>
+                    @endforeach
+                </select>
+            </form>
             <button onclick="toggleDropdown('dealsExportDropdown')" id="btnDealsExport" class="flex items-center gap-2.5 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-sm font-bold shadow-sm border border-slate-100 dark:border-slate-700/60 hover:bg-slate-50 transition active:scale-95">
                 <i data-lucide="download" class="w-4 h-4 text-slate-400"></i>
                 Export Board

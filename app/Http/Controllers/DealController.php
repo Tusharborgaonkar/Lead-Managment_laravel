@@ -11,24 +11,35 @@ class DealController extends Controller
     /**
      * Display a listing of deals.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Deal::query();
+
+        // Search in title, customer name, company
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function($cq) use ($search) {
+                      $cq->where('name', 'like', "%{$search}%")
+                         ->orWhere('company', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by Stage
+        if ($request->filled('stage') && $request->stage !== 'all') {
+            $query->where('stage', $request->stage);
+        }
+
         $stats = (object)[
             'total_deals' => Deal::count(),
-            'won_value' => '$' . number_format(Deal::won()->sum('value')),
+            'won_value' => '$' . number_format(Deal::where('stage', 'Won')->sum('value')),
             'pipeline_value' => '$' . number_format(Deal::where('stage', '!=', 'Won')->sum('value')),
-            'win_rate' => Deal::count() > 0 ? round((Deal::won()->count() / Deal::count()) * 100) . '%' : '0%',
+            'win_rate' => Deal::count() > 0 ? round((Deal::where('stage', 'Won')->count() / Deal::count()) * 100) . '%' : '0%',
             'won_trend' => '+0%'
         ];
 
-        // Fetch deals with customers grouped by stage
-        $pipeline = [
-            'Lead In' => Deal::with('customer')->where('stage', 'Lead In')->get(),
-            'Contact Made' => Deal::with('customer')->where('stage', 'Contact Made')->get(),
-            'Needs Defined' => Deal::with('customer')->where('stage', 'Needs Defined')->get(),
-            'Proposal Made' => Deal::with('customer')->where('stage', 'Proposal Made')->get(),
-            'Negotiations' => Deal::with('customer')->where('stage', 'Negotiations')->get(),
-        ];
         $pipelineChart = [
             ['stage' => 'Prospect', 'value' => Deal::where('stage', 'Prospect')->count(), 'color' => '#6366f1'],
             ['stage' => 'Qualified', 'value' => Deal::where('stage', 'Qualified')->count(), 'color' => '#10b981'],
@@ -37,7 +48,7 @@ class DealController extends Controller
             ['stage' => 'Won', 'value' => Deal::where('stage', 'Won')->count(), 'color' => '#22c55e'],
         ];
 
-        $deals = Deal::latest()->get()->groupBy('stage');
+        $deals = $query->with('customer')->latest()->get()->groupBy('stage');
 
         return view('deals.index', compact('stats', 'pipelineChart', 'deals'));
     }

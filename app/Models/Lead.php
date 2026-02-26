@@ -99,6 +99,6 @@ class Lead extends Model
     // Scopes
     public function scopePending($query)
     {
-        return $query->where('status', 'Pending');
+        return $query->where('category', 'Pending');
     }
 }
