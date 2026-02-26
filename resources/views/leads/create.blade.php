@@ -60,6 +60,19 @@
                             </div>
                         </div>
 
+                        {{-- Secondary Mobile (Optional) --}}
+                        <div class="space-y-3">
+                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Alternative Mobile <span class="text-slate-400 font-medium">(Optional)</span></label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                                    <i data-lucide="smartphone" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
+                                </div>
+                                <input type="text" name="optional_phone" value="{{ old('optional_phone') }}"
+                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
+                                       placeholder="+1-305-555-0999" />
+                            </div>
+                        </div>
+
                         {{-- Email Address --}}
                         <div class="space-y-3">
                             <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Email Address</label>
@@ -71,11 +84,49 @@
                                        class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
                                        placeholder="name@company.com" />
                             </div>
-                            <a href="{{ route('leads.index') }}" class="inline-block text-[14px] font-black text-[#64748b] hover:text-indigo-600 transition ml-2">Cancel</a>
+                        </div>
+
+                        {{-- Company Name --}}
+                        <div class="space-y-3">
+                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Company Name</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                                    <i data-lucide="building-2" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
+                                </div>
+                                <input type="text" name="company" value="{{ old('company') }}"
+                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
+                                       placeholder="Acme Corporation" />
+                            </div>
+                        </div>
+
+                        {{-- Website --}}
+                        <div class="space-y-3">
+                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Website</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                                    <i data-lucide="globe" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
+                                </div>
+                                <input type="url" name="website" value="{{ old('website') }}"
+                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
+                                       placeholder="https://example.com" />
+                            </div>
+                        </div>
+
+                        {{-- Location --}}
+                        <div class="space-y-3">
+                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Location</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                                    <i data-lucide="map-pin" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
+                                </div>
+                                <input type="text" name="location" value="{{ old('location') }}"
+                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
+                                       placeholder="City, State, or Address" />
+                            </div>
                         </div>
 
                         {{-- Status & Source Row --}}
-                        <div class="grid grid-cols-2 gap-8">
+                        <div class="grid grid-cols-2 gap-8 lg:col-span-2">
                             <div class="space-y-3">
                                 <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Lead Status <span class="text-rose-500">*</span></label>
                                 <div class="relative group group-select">
@@ -110,6 +161,54 @@
                             </div>
                         </div>
 
+                        {{-- Required Followup Types (Checkboxes) --}}
+                        <div class="col-span-full bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-8 border border-slate-100 dark:border-slate-800/60 transition-all">
+                            <label class="block text-[14px] font-black text-slate-800 dark:text-white mb-6">Preferred Follow-up Method(s)</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {{-- WhatsApp --}}
+                                <label class="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 cursor-pointer transition-all group">
+                                    <div class="relative flex items-center justify-center">
+                                        <input type="checkbox" name="followup_methods[]" value="whatsapp" class="peer sr-only">
+                                        <div class="w-6 h-6 rounded-md border-2 border-slate-300 peer-checked:border-emerald-500 peer-checked:bg-emerald-500 transition-all flex items-center justify-center">
+                                            <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="message-circle" class="w-5 h-5 text-emerald-500"></i>
+                                        <span class="text-[14px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 transition-colors">WhatsApp</span>
+                                    </div>
+                                </label>
+
+                                {{-- Email --}}
+                                <label class="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-indigo-500/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 cursor-pointer transition-all group">
+                                    <div class="relative flex items-center justify-center">
+                                        <input type="checkbox" name="followup_methods[]" value="email" class="peer sr-only">
+                                        <div class="w-6 h-6 rounded-md border-2 border-slate-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all flex items-center justify-center">
+                                            <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="mail-plus" class="w-5 h-5 text-indigo-500"></i>
+                                        <span class="text-[14px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 transition-colors">Email</span>
+                                    </div>
+                                </label>
+
+                                {{-- Cold Call --}}
+                                <label class="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-rose-500/50 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 cursor-pointer transition-all group">
+                                    <div class="relative flex items-center justify-center">
+                                        <input type="checkbox" name="followup_methods[]" value="cold_call" class="peer sr-only">
+                                        <div class="w-6 h-6 rounded-md border-2 border-slate-300 peer-checked:border-rose-500 peer-checked:bg-rose-500 transition-all flex items-center justify-center">
+                                            <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="phone-call" class="w-5 h-5 text-rose-500"></i>
+                                        <span class="text-[14px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-rose-600 transition-colors">Cold Call</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
                         {{-- Followup Date & Time (Conditional) --}}
                         <div id="followup-container" class="space-y-3 hidden col-span-full">
                             <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Followup Date & Time <span class="text-rose-500">*</span></label>
@@ -132,11 +231,14 @@
                                   placeholder="What was discussed? (e.g., Budget, requirement, follow-up date)">{{ old('notes') }}</textarea>
                     </div>
 
-                    <div class="pt-4">
+                    <div class="pt-4 flex items-center gap-4">
                         <button type="submit"
                                 class="px-10 py-4 bg-[#4f46e5] text-white rounded-2xl font-black text-[15px] flex items-center gap-3 shadow-xl shadow-indigo-500/30 hover:bg-indigo-700 hover:translate-y-[-1px] transition-all duration-200">
                             <i data-lucide="save" class="w-5 h-5"></i> Save Lead
                         </button>
+                        <a href="{{ route('leads.index') }}" class="px-8 py-4 text-[15px] font-black text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl transition-all">
+                            Cancel
+                        </a>
                     </div>
                 </form>
             </div>

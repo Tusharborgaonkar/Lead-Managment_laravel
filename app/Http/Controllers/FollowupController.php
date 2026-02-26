@@ -80,6 +80,77 @@ class FollowupController extends Controller
         return view('followups.index', compact('followups'));
     }
 
+    public function all()
+    {
+        $followups = collect([
+            (object)[
+                'id' => 1,
+                'lead_name' => 'TechCorp Solutions',
+                'contact_person' => 'Alice Johnson',
+                'followup_at' => now()->addDays(5)->setHour(10)->setMinute(0),
+                'status' => 'pending',
+                'assigned_to' => 'Admin Demo',
+                'description' => 'Did not respond to initial proposal sent last week.'
+            ],
+            (object)[
+                'id' => 2,
+                'lead_name' => 'Stellar Marketing',
+                'contact_person' => 'Bob Smith',
+                'followup_at' => now()->addDays(2)->setHour(14)->setMinute(30),
+                'status' => 'pending',
+                'assigned_to' => 'Admin Demo',
+                'description' => 'Follow up on the pending invoice for the Cloud Migration project.'
+            ],
+            (object)[
+                'id' => 3,
+                'lead_name' => 'Global Logistics Co.',
+                'contact_person' => 'Charlie Brown',
+                'followup_at' => now()->addDays(8)->setHour(11)->setMinute(0),
+                'status' => 'pending',
+                'assigned_to' => 'Admin Demo',
+                'description' => 'Schedule a demo for the new CRM features.'
+            ],
+            (object)[
+                'id' => 4,
+                'lead_name' => 'Innovation Hub',
+                'contact_person' => 'Diana Prince',
+                'followup_at' => now()->addDay()->setHour(9)->setMinute(0),
+                'status' => 'pending',
+                'assigned_to' => 'Admin Demo',
+                'description' => 'Needs a follow-up call regarding the partnership agreement.'
+            ],
+            (object)[
+                'id' => 5,
+                'lead_name' => 'Urban Developers',
+                'contact_person' => 'Edward Norton',
+                'followup_at' => now()->addDays(13)->setHour(15)->setMinute(0),
+                'status' => 'pending',
+                'assigned_to' => 'Admin Demo',
+                'description' => 'Request for additional information on pricing tiers.'
+            ],
+            (object)[
+                'id' => 6,
+                'lead_name' => 'Apex Systems',
+                'contact_person' => 'Fiona Gallagher',
+                'followup_at' => now()->subDays(2),
+                'status' => 'overdue',
+                'assigned_to' => 'Admin Demo',
+                'description' => 'Initial contact made, need to qualify the lead.'
+            ],
+            (object)[
+                'id' => 7,
+                'lead_name' => 'Zenith Enterprises',
+                'contact_person' => 'George Costanza',
+                'followup_at' => now()->subDay(),
+                'status' => 'overdue',
+                'assigned_to' => 'Admin Demo',
+                'description' => 'Waiting for feedback on the custom feature request.'
+            ],
+        ]);
+
+        return view('followups.all', compact('followups'));
+    }
+
     public function calendar()
     {
         $events = collect([
@@ -97,6 +168,6 @@ class FollowupController extends Controller
     public function destroy($id)
     {
         return redirect()->route('followups.index')
-                         ->with('success', 'Follow-up resolved successfully (Static Mock).');
+            ->with('success', 'Follow-up resolved successfully (Static Mock).');
     }
 }

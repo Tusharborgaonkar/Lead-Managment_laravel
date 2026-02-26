@@ -73,7 +73,7 @@
         </div>
         <a href="{{ route('followups.index') }}" 
            class="px-6 py-2.5 bg-white text-rose-600 rounded-xl font-bold text-sm hover:bg-rose-50 transition-all active:scale-95 shadow-sm whitespace-nowrap">
-            View all Follow-ups
+            overdue follow ups
         </a>
     </div>
 </div>
@@ -390,7 +390,7 @@
             @endforeach
         </div>
         <div class="px-6 py-3 border-t border-slate-50 dark:border-slate-700 bg-slate-50/30 text-center">
-            <a href="{{ route('followups.calendar') }}" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-colors">Manage calendar →</a>
+            <a href="{{ route('followups.all') }}" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-colors">View all Followups →</a>
         </div>
     </div>
 </div>
