@@ -2,275 +2,65 @@
 @section('title', 'Edit Lead — CRM Admin')
 
 @section('content')
-<div class="min-h-screen -m-6 p-12 bg-[#f8fafc]/50 dark:bg-slate-950/50">
-    <div class="max-w-7xl mx-auto">
-        {{-- Page Header --}}
-        <div class="mb-10">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('leads.show', $lead->id) }}" class="text-slate-400 hover:text-indigo-600 transition-colors">
-                    <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                </a>
-                <h1 class="text-[28px] font-black text-[#1e293b] dark:text-white">Edit Lead</h1>
-            </div>
-            <p class="text-sm text-slate-400 font-medium ml-9">Updating details for <span class="text-slate-700 dark:text-slate-200 font-bold">{{ $lead->name }}</span></p>
+<div class="max-w-4xl mx-auto space-y-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 dark:text-white leading-tight">Edit Lead (Project)</h1>
+            <p class="text-sm text-slate-400 mt-1 font-medium">Update project details and status</p>
         </div>
+        <a href="{{ route('leads.index') }}" class="flex items-center gap-2.5 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-2xl text-sm font-bold shadow-sm hover:bg-slate-50 transition active:scale-95">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+        </a>
+    </div>
 
-        {{-- Main Card --}}
-        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-50 dark:border-slate-800 shadow-2xl shadow-slate-200/40 dark:shadow-none overflow-hidden">
-            <div class="p-16">
-                <form method="POST" action="{{ route('leads.update', $lead->id) }}" class="space-y-12">
-                    @csrf @method('PUT')
+    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <form method="POST" action="{{ route('leads.update', $lead->id) }}" class="divide-y divide-slate-50">
+            @csrf
+            @method('PUT')
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-12">
-                        {{-- Full Name --}}
-                        <div class="space-y-3">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Full Name <span class="text-rose-500">*</span></label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="user" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="text" name="name" value="{{ old('name', $lead->name) }}" required
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm" />
-                            </div>
+            <div class="p-8 md:p-10">
+                <div class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2.5">
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Client Name <span class="text-rose-500">*</span></label>
+                            <input type="text" name="client_name" value="{{ old('client_name', $lead->client_name) }}" required class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
                         </div>
 
-                        {{-- Mobile / Phone --}}
-                        <div class="space-y-3">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Mobile / Phone <span class="text-rose-500">*</span></label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="phone" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="text" name="phone" value="{{ old('phone', $lead->phone) }}" required
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm" />
-                            </div>
-                        </div>
-
-                        {{-- Secondary Mobile (Optional) --}}
-                        <div class="space-y-3">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Alternative Mobile <span class="text-slate-400 font-medium">(Optional)</span></label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="smartphone" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="text" name="optional_phone" value="{{ old('optional_phone', $lead->optional_phone ?? '') }}"
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
-                                       placeholder="+1-305-555-0999" />
-                            </div>
-                        </div>
-
-                        {{-- Email Address --}}
-                        <div class="space-y-3">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Email Address</label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="mail" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="email" name="email" value="{{ old('email', $lead->email) }}"
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm" />
-                            </div>
-                        </div>
-
-                        {{-- Company Name --}}
-                        <div class="space-y-3">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Company Name</label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="building-2" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="text" name="company" value="{{ old('company', $lead->company ?? '') }}"
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
-                                       placeholder="Acme Corporation" />
-                            </div>
-                        </div>
-
-                        {{-- Website --}}
-                        <div class="space-y-3">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Website</label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="globe" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="url" name="website" value="{{ old('website', $lead->website ?? '') }}"
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
-                                       placeholder="https://example.com" />
-                            </div>
-                        </div>
-
-                        {{-- Location --}}
-                        <div class="space-y-3">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Location</label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="map-pin" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="text" name="location" value="{{ old('location', $lead->location ?? '') }}"
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm"
-                                       placeholder="City, State, or Address" />
-                            </div>
-                        </div>
-
-                        {{-- Status & Source Row --}}
-                        <div class="grid grid-cols-2 gap-8 lg:col-span-2">
-                            <div class="space-y-3">
-                                <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Lead Status <span class="text-rose-500">*</span></label>
-                                <div class="relative group group-select">
-                                    <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none z-10">
-                                        @php
-                                            $statusIcon = 'circle';
-                                            $statusColor = 'slate';
-                                            if(strtolower($lead->status) == 'not interested') { $statusIcon = 'x'; $statusColor = 'rose'; }
-                                            elseif(strtolower($lead->status) == 'followup') { $statusIcon = 'refresh-cw'; $statusColor = 'amber'; }
-                                            elseif(strtolower($lead->status) == 'new') { $statusIcon = 'star'; $statusColor = 'indigo'; }
-                                            elseif(strtolower($lead->status) == 'pending') { $statusIcon = 'clock'; $statusColor = 'sky'; }
-                                        @endphp
-                                        <i data-lucide="{{ $statusIcon }}" class="w-5 h-5 text-{{ $statusColor }}-500"></i>
-                                    </div>
-                                    <select name="status" required
-                                            class="w-full pl-14 pr-10 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none cursor-pointer shadow-sm">
-                                        @foreach(config('data.lead_statuses', []) as $status)
-                                            <option value="{{ $status }}" {{ old('status', $lead->status) === $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
-                                        @endforeach
-                                    </select>
-                                    <div class="absolute inset-y-0 right-0 pr-6 flex items-center pointer-events-none">
-                                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Source</label>
-                                <div class="relative group">
-                                    <select name="source"
-                                            class="w-full px-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none cursor-pointer shadow-sm">
-                                        <option value="">Select source</option>
-                                        @foreach(config('data.lead_sources', []) as $src)
-                                            <option value="{{ $src }}" {{ old('source', $lead->source) === $src ? 'selected' : '' }}>{{ $src }}</option>
-                                        @endforeach
-                                    </select>
-                                    <div class="absolute inset-y-0 right-0 pr-6 flex items-center pointer-events-none">
-                                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Required Followup Types (Checkboxes) --}}
-                        @php $existingMethods = $lead->followup_methods ?? []; @endphp
-                        <div class="col-span-full bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-8 border border-slate-100 dark:border-slate-800/60 transition-all">
-                            <label class="block text-[14px] font-black text-slate-800 dark:text-white mb-6">Preferred Follow-up Method(s)</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                {{-- WhatsApp --}}
-                                <label class="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 cursor-pointer transition-all group">
-                                    <div class="relative flex items-center justify-center">
-                                        <input type="checkbox" name="followup_methods[]" value="whatsapp" class="peer sr-only" {{ in_array('whatsapp', old('followup_methods', $existingMethods)) ? 'checked' : '' }}>
-                                        <div class="w-6 h-6 rounded-md border-2 border-slate-300 peer-checked:border-emerald-500 peer-checked:bg-emerald-500 transition-all flex items-center justify-center">
-                                            <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="message-circle" class="w-5 h-5 text-emerald-500"></i>
-                                        <span class="text-[14px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 transition-colors">WhatsApp</span>
-                                    </div>
-                                </label>
-
-                                {{-- Email --}}
-                                <label class="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-indigo-500/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 cursor-pointer transition-all group">
-                                    <div class="relative flex items-center justify-center">
-                                        <input type="checkbox" name="followup_methods[]" value="email" class="peer sr-only" {{ in_array('email', old('followup_methods', $existingMethods)) ? 'checked' : '' }}>
-                                        <div class="w-6 h-6 rounded-md border-2 border-slate-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 transition-all flex items-center justify-center">
-                                            <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="mail-plus" class="w-5 h-5 text-indigo-500"></i>
-                                        <span class="text-[14px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 transition-colors">Email</span>
-                                    </div>
-                                </label>
-
-                                {{-- Cold Call --}}
-                                <label class="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-rose-500/50 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 cursor-pointer transition-all group">
-                                    <div class="relative flex items-center justify-center">
-                                        <input type="checkbox" name="followup_methods[]" value="cold_call" class="peer sr-only" {{ in_array('cold_call', old('followup_methods', $existingMethods)) ? 'checked' : '' }}>
-                                        <div class="w-6 h-6 rounded-md border-2 border-slate-300 peer-checked:border-rose-500 peer-checked:bg-rose-500 transition-all flex items-center justify-center">
-                                            <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="phone-call" class="w-5 h-5 text-rose-500"></i>
-                                        <span class="text-[14px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-rose-600 transition-colors">Cold Call</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        {{-- Followup Date & Time (Conditional) --}}
-                        <div id="followup-container" class="space-y-3 hidden col-span-full">
-                            <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Followup Date & Time <span class="text-rose-500">*</span></label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                                    <i data-lucide="calendar" class="w-5 h-5 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
-                                </div>
-                                <input type="datetime-local" name="followup_date" id="followup_date" 
-                                       value="{{ old('followup_date', $lead->followup_date ? $lead->followup_date->format('Y-m-d\TH:i') : '') }}"
-                                       class="w-full pl-14 pr-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm" />
-                            </div>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Project Name <span class="text-rose-500">*</span></label>
+                            <input type="text" name="project_name" value="{{ old('project_name', $lead->project_name) }}" required class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
                         </div>
                     </div>
 
-                    {{-- Notes Section --}}
-                    <div class="space-y-3">
-                        <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200">Initial Conversation Notes</label>
-                        <textarea name="description" rows="4"
-                                  class="w-full px-8 py-7 rounded-[2.5rem] bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm resize-none"
-                                  placeholder="What was discussed? (e.g., Budget, requirement, follow-up date)">{{ old('description', $lead->description) }}</textarea>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2.5">
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Phone Number</label>
+                            <input type="text" name="phone" value="{{ old('phone', $lead->phone) }}" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
+                        </div>
+
+                        <div class="flex flex-col gap-2.5">
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Email Address</label>
+                            <input type="email" name="email" value="{{ old('email', $lead->email) }}" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
+                        </div>
                     </div>
 
-                    <div class="pt-4 flex items-center gap-4">
-                        <button type="submit"
-                                class="px-10 py-4 bg-[#4f46e5] text-white rounded-2xl font-black text-[15px] flex items-center gap-3 shadow-xl shadow-indigo-500/30 hover:bg-indigo-700 hover:translate-y-[-1px] transition-all duration-200">
-                            <i data-lucide="check" class="w-5 h-5"></i> Update Lead
-                        </button>
-                        <a href="{{ route('leads.show', $lead->id) }}" class="px-8 py-4 text-[15px] font-black text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl transition-all">
-                            Cancel
-                        </a>
+                    <div class="flex flex-col gap-2.5">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Status <span class="text-rose-500">*</span></label>
+                        <select name="status" required class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
+                            <option value="Pending" {{ old('status', $lead->status) === 'Pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="Won" {{ old('status', $lead->status) === 'Won' ? 'selected' : '' }}>Won</option>
+                            <option value="Lost" {{ old('status', $lead->status) === 'Lost' ? 'selected' : '' }}>Lost</option>
+                        </select>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+
+            <div class="p-8 md:p-10 bg-slate-50/50 flex items-center justify-end gap-4">
+                <button type="submit" class="px-10 py-3.5 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition shadow-xl shadow-indigo-500/25 active:scale-95">
+                    Update Lead
+                </button>
+            </div>
+        </form>
     </div>
 </div>
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusSelect = document.querySelector('select[name="status"]');
-        const followupContainer = document.getElementById('followup-container');
-        const followupInput = document.getElementById('followup_date');
-        
-        function toggleFollowup(animate = true) {
-            const isFollowup = statusSelect.value.toLowerCase() === 'followup';
-            
-            if (isFollowup) {
-                followupContainer.classList.remove('hidden');
-                if (animate) {
-                    followupContainer.style.opacity = '0';
-                    followupContainer.style.transform = 'translateY(-10px)';
-                    followupContainer.classList.add('transition-all', 'duration-300');
-                    setTimeout(() => {
-                        followupContainer.style.opacity = '1';
-                        followupContainer.style.transform = 'translateY(0)';
-                    }, 10);
-                }
-                followupInput.setAttribute('required', 'required');
-            } else {
-                followupContainer.classList.add('hidden');
-                followupInput.removeAttribute('required');
-            }
-        }
-        
-        statusSelect.addEventListener('change', () => toggleFollowup(true));
-        toggleFollowup(false); // Initial check without animation
-    });
-</script>
-@endpush
 @endsection

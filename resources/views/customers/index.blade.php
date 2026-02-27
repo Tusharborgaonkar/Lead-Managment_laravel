@@ -9,26 +9,6 @@
         <p class="text-sm text-slate-400 mt-1">View and manage your customer relationships</p>
     </div>
     <div class="flex items-center gap-3">
-        <div class="relative">
-            <button onclick="toggleDropdown('customersExportDropdown')" class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-all shadow-sm">
-                <i data-lucide="download" class="w-4 h-4 text-slate-400"></i>
-                Export
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
-            </button>
-            <div id="customersExportDropdown" class="hidden absolute top-12 right-0 w-48 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700/60 z-[100] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                <div class="p-1.5 space-y-0.5">
-                    <button onclick="exportReport('CSV', 'Customers List')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl transition-colors flex items-center gap-2.5">
-                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Export as CSV
-                    </button>
-                    <button onclick="exportReport('Excel', 'Customers List')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors flex items-center gap-2.5">
-                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export as Excel
-                    </button>
-                    <button onclick="exportReport('PDF', 'Customers List')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors flex items-center gap-2.5">
-                        <i data-lucide="file-type-2" class="w-3.5 h-3.5"></i> Export as PDF
-                    </button>
-                </div>
-            </div>
-        </div>
         <a href="{{ route('customers.create') }}" class="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/25">
             <i data-lucide="plus" class="w-4 h-4"></i>
             Add Customer
@@ -44,43 +24,9 @@
             <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center transition-colors group-hover:bg-emerald-100">
                 <i data-lucide="users" class="w-6 h-6 text-emerald-600"></i>
             </div>
-            <span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700">{{ $stats->trend }}</span>
         </div>
         <div class="text-3xl font-black text-slate-800 dark:text-white mb-1">{{ $stats->total }}</div>
         <div class="text-sm font-bold text-slate-400">Total Customers</div>
-    </div>
-
-    <!-- Active Customers -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700/60 shadow-sm relative overflow-hidden group">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center transition-colors group-hover:bg-indigo-100">
-                <i data-lucide="user-check" class="w-6 h-6 text-indigo-600"></i>
-            </div>
-        </div>
-        <div class="text-3xl font-black text-slate-800 dark:text-white mb-1">{{ $stats->active }}</div>
-        <div class="text-sm font-bold text-slate-400">Active</div>
-    </div>
-
-    <!-- Avg Lifetime Value -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700/60 shadow-sm relative overflow-hidden group">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center transition-colors group-hover:bg-amber-100">
-                <i data-lucide="dollar-sign" class="w-6 h-6 text-amber-600"></i>
-            </div>
-        </div>
-        <div class="text-3xl font-black text-slate-800 dark:text-white mb-1">{{ $stats->avg_value }}</div>
-        <div class="text-sm font-bold text-slate-400">Avg. Lifetime Value</div>
-    </div>
-
-    <!-- Retention Rate -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700/60 shadow-sm relative overflow-hidden group">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center transition-colors group-hover:bg-blue-100">
-                <i data-lucide="refresh-cw" class="w-6 h-6 text-blue-600"></i>
-            </div>
-        </div>
-        <div class="text-3xl font-black text-slate-800 dark:text-white mb-1">{{ $stats->retention }}</div>
-        <div class="text-sm font-bold text-slate-400">Retention Rate</div>
     </div>
 </div>
 
@@ -93,31 +39,6 @@
         <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
         <input type="text" name="search" id="customer-search" value="{{ request('search') }}" placeholder="Search customers..." class="bg-transparent border-none outline-none focus:ring-0 focus:outline-none text-sm text-slate-700 dark:text-slate-300 w-full placeholder:text-slate-400" />
     </form>
-
-    <div class="flex items-center gap-3 ml-auto">
-        <form action="{{ route('customers.index') }}" method="GET" class="flex items-center gap-3">
-            @foreach(request()->except('group', 'status', 'page') as $key => $value)
-                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-            @endforeach
-            <select name="group" onchange="this.form.submit()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
-                <option value="all">All Groups</option>
-                <option value="Millennials" {{ request('group') === 'Millennials' ? 'selected' : '' }}>Millennials</option>
-                <option value="Generation Z" {{ request('group') === 'Generation Z' ? 'selected' : '' }}>Generation Z</option>
-                <option value="Generation X" {{ request('group') === 'Generation X' ? 'selected' : '' }}>Generation X</option>
-            </select>
-            <select name="status" onchange="this.form.submit()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
-                <option value="all">All Status</option>
-                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-            </select>
-        </form>
-        <select id="customer-sort" onchange="sortCustomers()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 outline-none focus:border-slate-400 dark:focus:border-slate-500 focus:ring-0 shadow-sm transition-all">
-            <option value="newest">Sort by</option>
-            <option value="newest">Newest</option>
-            <option value="spent-desc">Spent: High to Low</option>
-            <option value="name-asc">Name: A-Z</option>
-        </select>
-    </div>
 </div>
 
 <!-- Customers Table -->
@@ -143,27 +64,14 @@
 
 @php
     $customersData = $customers->map(function($customer) {
-        $initials = collect(explode(' ', $customer->name))->map(fn($n) => substr($n, 0, 1))->join('');
-        $colorMap = [
-            'indigo' => 'bg-indigo-500 text-white',
-            'emerald' => 'bg-emerald-500 text-white',
-            'orange' => 'bg-orange-500 text-white',
-            'rose' => 'bg-rose-500 text-white',
-            'slate' => 'bg-slate-500 text-white',
-        ];
+        $initials = collect(explode(' ', $customer->name))->map(fn($n) => substr($n, 0, 1))->take(2)->join('');
         return [
             'id' => $customer->id,
             'name' => $customer->name,
             'email' => $customer->email,
             'initials' => strtoupper($initials),
-            'avatar_class' => $colorMap[$customer->avatar_color] ?? 'bg-indigo-500 text-white',
-            'company' => $customer->company,
-            'group' => $customer->group,
-            'status' => $customer->status,
-            'spent' => '$' . number_format($customer->total_spent, 2),
-            'spent_raw' => $customer->total_spent,
-            'orders' => $customer->total_orders,
-            'rating' => number_format($customer->rating, 1),
+            'company' => $customer->company_name,
+            'phone' => $customer->phone,
             'show_url' => route('customers.show', $customer->id),
             'edit_url' => route('customers.edit', $customer->id),
         ];
@@ -185,63 +93,26 @@ document.addEventListener('DOMContentLoaded', function() {
             formatter: function(cell) {
                 var d = cell.getData();
                 return '<div class="flex items-center gap-4">' +
-                    '<div class="w-10 h-10 rounded-xl ' + d.avatar_class + ' flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-slate-700 shadow-sm">' + d.initials + '</div>' +
-                    '<div><p class="font-bold text-slate-800 dark:text-white leading-tight mb-0.5">' + d.name + '</p>' +
-                    '<p class="text-xs text-slate-400 font-medium">' + d.email + '</p></div>' +
+                    '<div class="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-slate-700 shadow-sm">' + d.initials + '</div>' +
+                    '<div><a href="' + d.show_url + '" class="font-bold text-indigo-600 dark:text-indigo-400 leading-tight mb-0.5 hover:underline">' + d.name + '</a>' +
+                    '<p class="text-xs text-slate-400 font-medium">' + (d.email || 'No email') + '</p></div>' +
                 '</div>';
             }
         },
         {
             title: 'Company',
             field: 'company',
-            minWidth: 120,
+            minWidth: 150,
             formatter: function(cell) {
-                return '<span class="text-slate-600 dark:text-slate-300 font-medium">' + (cell.getValue() || '') + '</span>';
+                return '<span class="text-slate-600 dark:text-slate-300 font-medium">' + (cell.getValue() || '-') + '</span>';
             }
         },
         {
-            title: 'Group',
-            field: 'group',
-            minWidth: 130,
+            title: 'Phone',
+            field: 'phone',
+            minWidth: 150,
             formatter: function(cell) {
-                var val = cell.getValue() || '';
-                return '<span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">' + val + '</span>';
-            }
-        },
-        {
-            title: 'Status',
-            field: 'status',
-            minWidth: 100,
-            formatter: function(cell) {
-                var val = cell.getValue() || '';
-                var isActive = val === 'active';
-                var cls = isActive ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 border-emerald-100 dark:border-emerald-500/20' : 'bg-slate-50 dark:bg-slate-500/10 text-slate-500 border-slate-100 dark:border-slate-500/20';
-                return '<span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ' + cls + ' border">' + val + '</span>';
-            }
-        },
-        {
-            title: 'Spent',
-            field: 'spent_raw',
-            minWidth: 100,
-            formatter: function(cell) {
-                var d = cell.getData();
-                return '<span class="font-bold text-slate-800 dark:text-white">' + d.spent + '</span>';
-            }
-        },
-        {
-            title: 'Orders',
-            field: 'orders',
-            minWidth: 80,
-            formatter: function(cell) {
-                return '<span class="text-slate-600 dark:text-slate-400 font-medium">' + (cell.getValue() || 0) + '</span>';
-            }
-        },
-        {
-            title: 'Rating',
-            field: 'rating',
-            minWidth: 80,
-            formatter: function(cell) {
-                return '<div class="flex items-center gap-1.5"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i><span class="font-bold text-slate-800 dark:text-white">' + cell.getValue() + '</span></div>';
+                return '<span class="text-slate-600 dark:text-slate-300 font-medium">' + (cell.getValue() || '-') + '</span>';
             }
         },
         {
@@ -261,23 +132,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ], customersData);
 });
-
-function filterCustomers() {
-    // No-op for customers as it's now server-side
-}
-
-function sortCustomers() {
-    if (!customersTable) return;
-    var sortBy = document.getElementById('customer-sort').value;
-
-    if (sortBy === 'name-asc') {
-        customersTable.setSort('name', 'asc');
-    } else if (sortBy === 'spent-desc') {
-        customersTable.setSort('spent_raw', 'desc');
-    } else {
-        customersTable.setSort('id', 'desc');
-    }
-}
 </script>
 @endpush
-

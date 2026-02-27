@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Followup;
+use App\Models\Lead;
 use App\Http\Requests\StoreFollowupRequest;
 use App\Http\Requests\UpdateFollowupRequest;
 
@@ -14,91 +15,64 @@ class FollowupController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Followup::with(['lead', 'customer', 'assignedTo'])->pending();
+        $query = Followup::with('lead.customer');
 
-        if ($request->filled('search')) {
-            $query->search($request->search);
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
         }
 
-        if ($request->filled('date')) {
-            $query->scheduledFor($request->date);
-        } else {
-            $query->whereDate('scheduled_at', '<', now()->toDateString());
-        }
-
-        $followups = $query->latest('scheduled_at')->paginate(10);
+        $followups = $query->orderBy('followup_date', 'asc')->paginate(10)->withQueryString();
 
         return view('followups.index', compact('followups'));
     }
-
-    public function all()
+    
+    // API endpoint for dashboard
+    public function upcoming()
     {
-        $followups = Followup::with(['lead', 'customer', 'assignedTo'])
-            ->latest('scheduled_at')
-            ->paginate(10);
-
-        return view('followups.all', compact('followups'));
-    }
-
-    public function calendar()
-    {
-        $events = Followup::whereMonth('scheduled_at', now()->month)
-            ->get()
-            ->map(function ($f) {
-            return (object)[
-            'date' => $f->scheduled_at->format('Y-m-d'),
-            'title' => $f->title,
-            'type' => $f->type ?? 'Followup',
-            'color' => 'indigo'
-            ];
-        });
-
-        return view('followups.calendar', compact('events'));
+        $followups = Followup::with('lead.customer')
+            ->where('status', 'Pending')
+            ->whereDate('followup_date', '>=', now()->toDateString())
+            ->orderBy('followup_date', 'asc')
+            ->take(10)
+            ->get();
+            
+        return response()->json($followups);
     }
 
     public function create()
     {
-        $leads = \App\Models\Lead::select('id', 'name', 'company')->get();
-        $customers = \App\Models\Customer::select('id', 'name', 'company')->get();
-        return view('followups.create', compact('leads', 'customers'));
+        $leads = Lead::with('customer')->get();
+        return view('followups.create', compact('leads'));
     }
 
     public function store(StoreFollowupRequest $request)
     {
-        $validated = $request->validated();
-        $validated['created_by'] = auth()->id() ?? 1;
-
-        Followup::create($validated);
-
-        return redirect()->route('followups.index')
-            ->with('success', 'Follow-up created successfully.');
+        Followup::create($request->validated());
+        return back()->with('success', 'Follow-up scheduled successfully.');
     }
 
-    public function edit($id)
+    public function edit(Followup $followup)
     {
-        $followup = Followup::findOrFail($id);
-        $leads = \App\Models\Lead::select('id', 'name', 'company')->get();
-        $customers = \App\Models\Customer::select('id', 'name', 'company')->get();
-        return view('followups.edit', compact('followup', 'leads', 'customers'));
+        $leads = Lead::with('customer')->get();
+        return view('followups.edit', compact('followup', 'leads'));
     }
 
-    public function update(UpdateFollowupRequest $request, $id)
+    public function update(UpdateFollowupRequest $request, Followup $followup)
     {
-        $followup = Followup::findOrFail($id);
-
-        $validated = $request->validated();
-        $followup->update($validated);
-
-        return redirect()->route('followups.index')
-            ->with('success', 'Follow-up updated successfully.');
+        $followup->update($request->validated());
+        return back()->with('success', 'Follow-up updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(Followup $followup)
     {
-        $followup = Followup::findOrFail($id);
         $followup->delete();
+        return back()->with('success', 'Follow-up deleted successfully.');
+    }
 
-        return redirect()->route('followups.index')
-            ->with('success', 'Follow-up deleted successfully.');
+    // Quick action to mark as completed
+    public function complete(Followup $followup)
+    {
+        $followup->update(['status' => 'Completed']);
+        return back()->with('success', 'Follow-up marked as completed.');
     }
 }

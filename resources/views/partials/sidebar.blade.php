@@ -61,11 +61,11 @@
     <div class="px-4 py-4 border-t border-slate-100 dark:border-slate-800">
         <div class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition group">
             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-black flex-shrink-0 shadow-md shadow-indigo-500/20">
-                AD
+                {{ collect(explode(' ', Auth::user()->name))->map(fn($n) => substr($n, 0, 1))->join('') }}
             </div>
             <div class="flex-1 min-w-0">
-                <div class="text-sm font-bold text-slate-800 dark:text-white truncate">Admin Demo</div>
-                <div class="text-[10px] text-slate-400 truncate">Administrator · admin@demo.com</div>
+                <div class="text-sm font-bold text-slate-800 dark:text-white truncate">{{ Auth::user()->name }}</div>
+                <div class="text-[10px] text-slate-400 truncate">Administrator · {{ Auth::user()->email }}</div>
             </div>
             <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
         </div>

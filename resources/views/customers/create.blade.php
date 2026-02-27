@@ -7,7 +7,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-black text-slate-800 dark:text-white leading-tight">Add New Customer</h1>
-            <p class="text-sm text-slate-400 mt-1 font-medium">Create a new customer profile and contact details</p>
+            <p class="text-sm text-slate-400 mt-1 font-medium">Create a new customer profile</p>
         </div>
         <a href="{{ route('customers.index') }}" class="flex items-center gap-2.5 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-sm font-bold shadow-sm border border-slate-100 dark:border-slate-700/60 hover:bg-slate-50 transition active:scale-95">
             <i data-lucide="arrow-left" class="w-4 h-4 text-slate-400"></i>
@@ -20,7 +20,6 @@
         <form action="{{ route('customers.store') }}" method="POST" class="divide-y divide-slate-50 dark:divide-slate-700/50">
             @csrf
             
-            {{-- Section 1: Basic Info --}}
             <div class="p-8 md:p-10">
                 <div class="flex items-center gap-3 mb-8">
                     <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
@@ -28,100 +27,43 @@
                     </div>
                     <div>
                         <h2 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">Basic Information</h2>
-                        <p class="text-xs text-slate-400 font-medium mt-0.5">Primary contact and group classification</p>
+                        <p class="text-xs text-slate-400 font-medium mt-0.5">Primary contact and company details</p>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                     <div class="flex flex-col gap-2.5">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Full Name</label>
-                        <input type="text" name="name" placeholder="e.g. John Doe" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" required>
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Full Name *</label>
+                        <input type="text" name="name" placeholder="e.g. John Doe" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" required value="{{ old('name') }}">
                     </div>
                     
                     <div class="flex flex-col gap-2.5">
                         <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Email Address</label>
-                        <input type="email" name="email" placeholder="e.g. john@company.com" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" required>
+                        <input type="email" name="email" placeholder="e.g. john@company.com" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" value="{{ old('email') }}">
+                    </div>
+
+                    <div class="flex flex-col gap-2.5">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Phone Number</label>
+                        <input type="text" name="phone" placeholder="+1 (555) 000-0000" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" value="{{ old('phone') }}">
                     </div>
 
                     <div class="flex flex-col gap-2.5">
                         <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Company</label>
-                        <input type="text" name="company" placeholder="e.g. Acme Corp" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all">
-                    </div>
-
-                    <div class="flex flex-col gap-2.5">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Customer Group</label>
-                        <div class="relative">
-                            <select name="group" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer">
-                                <option value="Millennials">Millennials</option>
-                                <option value="Generation Z">Generation Z</option>
-                                <option value="Generation X">Generation X</option>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 2: Contact Details --}}
-            <div class="p-8 md:p-10">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
-                        <i data-lucide="phone" class="w-5 h-5 text-emerald-500"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">Contact & Status</h2>
-                        <p class="text-xs text-slate-400 font-medium mt-0.5">Communication channels and account state</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="flex flex-col gap-2.5">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Phone Number</label>
-                        <input type="text" name="phone" placeholder="+1 (555) 000-0000" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all">
-                    </div>
-
-                    <div class="flex flex-col gap-2.5">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Account Status</label>
-                        <div class="relative">
-                            <select name="status" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                                <option value="pending">Pending</option>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-2.5 md:col-span-2 lg:col-span-1">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Alternative Phone <span class="text-slate-400 font-medium normal-case tracking-normal">(Optional)</span></label>
-                        <input type="text" name="phone_alt" value="{{ old('phone_alt') }}" placeholder="e.g. +1 (555) 999-9999" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all">
-                    </div>
-                </div>
-            </div>
-
-            {{-- Section 3: Notes --}}
-            <div class="p-8 md:p-10">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
-                        <i data-lucide="sticky-note" class="w-5 h-5 text-amber-500"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">Internal Notes</h2>
-                        <p class="text-xs text-slate-400 font-medium mt-0.5">Initial observations and history</p>
+                        <input type="text" name="company_name" placeholder="e.g. Acme Corp" class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" value="{{ old('company_name') }}">
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2.5">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Observation & History</label>
-                    <textarea name="notes" rows="5" placeholder="Add any initial details..." class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-3xl px-6 py-5 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"></textarea>
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Address</label>
+                    <textarea name="address" rows="3" placeholder="Full address..." class="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-3xl px-6 py-5 text-sm font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none">{{ old('address') }}</textarea>
                 </div>
             </div>
 
             {{-- Footer Actions --}}
             <div class="p-8 md:p-10 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-end gap-4">
-                <button type="button" onclick="window.history.back()" class="px-8 py-3.5 border border-slate-200 dark:border-slate-700 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95">
+                <a href="{{ route('customers.index') }}" class="px-8 py-3.5 border border-slate-200 dark:border-slate-700 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95">
                     Cancel
-                </button>
+                </a>
                 <button type="submit" class="px-10 py-3.5 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition shadow-xl shadow-indigo-500/25 active:scale-95">
                     Create Customer
                 </button>

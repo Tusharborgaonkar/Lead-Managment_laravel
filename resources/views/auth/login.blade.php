@@ -55,7 +55,6 @@
                 <input type="checkbox" name="remember" class="rounded">
                 Remember me
             </label>
-            <a href="{{ route('password.request') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Forgot password?</a>
         </div>
 
         <button type="submit"
@@ -64,9 +63,13 @@
         </button>
     </form>
 
-    <p class="mt-6 text-center text-sm text-slate-500">
-        Don't have an account?
-        <a href="{{ route('register') }}" class="text-indigo-600 hover:text-indigo-700 font-semibold">Register</a>
-    </p>
+    <div class="mt-8 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+        <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 text-center">Sample Credentials</div>
+        <div class="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-300">
+            <span>admin@gmail.com</span>
+            <span class="text-slate-300">|</span>
+            <span>password</span>
+        </div>
+    </div>
 </div>
 @endsection

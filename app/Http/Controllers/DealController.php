@@ -13,82 +13,57 @@ class DealController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Deal::with(['customer', 'owner']);
-
-        // Search
-        if ($request->filled('search')) {
-            $query->search($request->search);
-        }
-
-        // Filter by Stage
-        if ($request->filled('stage') && $request->stage !== 'all') {
-            $query->where('stage', $request->stage);
-        }
-
-        $thisMonthWon = Deal::where('stage', 'Won')->whereMonth('created_at', now()->month)->count();
-        $lastMonthWon = Deal::where('stage', 'Won')
-            ->whereMonth('created_at', now()->subMonth()->month)
-            ->whereYear('created_at', now()->subMonth()->year)
-            ->count() ?: 1;
-        $trendValue = (($thisMonthWon - $lastMonthWon) / $lastMonthWon) * 100;
-
+        // STATIC DEMO DATA - NO DATABASE CONNECTION
         $stats = (object)[
-            'total_deals' => Deal::count(),
-            'won_value' => '$' . number_format(Deal::where('stage', 'Won')->sum('value')),
-            'pipeline_value' => '$' . number_format(Deal::where('stage', '!=', 'Won')->sum('value')),
-            'win_rate' => Deal::count() > 0 ? round((Deal::where('stage', 'Won')->count() / Deal::count()) * 100) . '%' : '0%',
-            'won_trend' => ($trendValue >= 0 ? '+' : '') . round($trendValue) . '%'
+            'total_deals' => 450,
+            'won_value' => '$325,000',
+            'pipeline_value' => '$157,000',
+            'win_rate' => '42%',
+            'won_trend' => '+15%'
         ];
 
         $pipelineChart = [
-            ['stage' => 'Prospect', 'value' => Deal::where('stage', 'Prospect')->count(), 'color' => '#6366f1'],
-            ['stage' => 'Qualified', 'value' => Deal::where('stage', 'Qualified')->count(), 'color' => '#10b981'],
-            ['stage' => 'Proposal', 'value' => Deal::where('stage', 'Proposal')->count(), 'color' => '#f59e0b'],
-            ['stage' => 'Negotiation', 'value' => Deal::where('stage', 'Negotiation')->count(), 'color' => '#f97316'],
-            ['stage' => 'Won', 'value' => Deal::where('stage', 'Won')->count(), 'color' => '#22c55e'],
+            ['stage' => 'Prospect', 'value' => 85, 'color' => '#6366f1'],
+            ['stage' => 'Qualified', 'value' => 65, 'color' => '#10b981'],
+            ['stage' => 'Proposal', 'value' => 45, 'color' => '#f59e0b'],
+            ['stage' => 'Negotiation', 'value' => 25, 'color' => '#f97316'],
+            ['stage' => 'Won', 'value' => 180, 'color' => '#22c55e'],
         ];
 
-        $deals = $query->latest()->get()->groupBy('stage');
+        $deals = collect([
+            (object)['id' => 1, 'title' => 'Mobile App Dev', 'value' => 15000, 'stage' => 'Negotiation', 'customer' => (object)['id' => 1, 'name' => 'Acme Corp', 'company' => 'Acme Industries'], 'owner' => (object)['name' => 'Admin']],
+            (object)['id' => 2, 'title' => 'SEO Optimization', 'value' => 2500, 'stage' => 'Qualified', 'customer' => (object)['id' => 2, 'name' => 'Global Tech', 'company' => 'Global Tech Solutions'], 'owner' => (object)['name' => 'Admin']],
+            (object)['id' => 3, 'title' => 'Cloud Migration', 'value' => 50000, 'stage' => 'Proposal', 'customer' => (object)['id' => 3, 'name' => 'Stellar Inc', 'company' => 'Stellar Marketing'], 'owner' => (object)['name' => 'Admin']],
+        ])->groupBy('stage');
 
         return view('deals.index', compact('stats', 'pipelineChart', 'deals'));
     }
 
     public function create()
     {
-        $customers = \App\Models\Customer::select('id', 'name', 'company')->get();
+        $customers = collect([(object)['id' => 1, 'name' => 'Acme Corp', 'company' => 'Acme Industries']]);
         return view('deals.create', compact('customers'));
     }
 
     public function store(StoreDealRequest $request)
     {
-        $validated = $request->validated();
-        $validated['created_by'] = auth()->id() ?? 1;
-
-        Deal::create($validated);
-
-        return redirect()->route('deals.index')->with('success', 'Deal created successfully.');
+        return redirect()->route('deals.index')->with('success', 'Static Demo: Deal creation simulated.');
     }
 
     public function edit($id)
     {
-        $deal = Deal::findOrFail($id);
-        $customers = \App\Models\Customer::select('id', 'name', 'company')->get();
+        $deal = (object)['id' => $id, 'name' => 'Mock Deal', 'value' => 5000, 'stage' => 'Prospect'];
+        $customers = collect([(object)['id' => 1, 'name' => 'Acme Corp', 'company' => 'Acme Industries']]);
         return view('deals.edit', compact('deal', 'customers'));
     }
 
     public function update(UpdateDealRequest $request, $id)
     {
-        $deal = Deal::findOrFail($id);
-        $deal->update($request->validated());
-
-        return redirect()->route('deals.index')->with('success', 'Deal updated successfully.');
+        return redirect()->route('deals.index')->with('success', 'Static Demo: Deal update simulated.');
     }
 
     public function destroy($id)
     {
-        $deal = Deal::findOrFail($id);
-        $deal->delete();
-
-        return redirect()->route('deals.index')->with('success', 'Deal deleted successfully.');
+        return redirect()->route('deals.index')->with('success', 'Static Demo: Deal deletion simulated.');
     }
 }

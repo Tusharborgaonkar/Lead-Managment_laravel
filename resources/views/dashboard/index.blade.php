@@ -7,7 +7,7 @@
     <div>
         <h1 class="text-2xl font-black text-slate-800 dark:text-white leading-tight">Dashboard</h1>
         <div class="flex items-center gap-2 mt-1">
-            <p class="text-sm text-slate-400 font-medium tracking-tight">Welcome back, Admin Demo!</p>
+            <p class="text-sm text-slate-400 font-medium tracking-tight">Welcome back, {{ Auth::user()->name }}!</p>
             <span class="w-1 h-1 rounded-full bg-slate-300"></span>
             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{{ now()->format('l, F j') }}</div>
         </div>
@@ -101,20 +101,20 @@
     <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm">
         <div class="flex items-center gap-3 mb-3">
             <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
-                <i data-lucide="handshake" class="w-5 h-5 text-amber-500"></i>
+                <i data-lucide="clock" class="w-5 h-5 text-amber-500"></i>
             </div>
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Deals</span>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending Leads</span>
         </div>
-        <div class="text-3xl font-black text-slate-800 dark:text-white">{{ number_format($totalDeals) }}</div>
+        <div class="text-3xl font-black text-slate-800 dark:text-white">{{ number_format($pendingLeads) }}</div>
     </div>
     <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm">
         <div class="flex items-center gap-3 mb-3">
-            <div class="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center">
-                <i data-lucide="trending-up" class="w-5 h-5 text-sky-500"></i>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center">
+                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-500"></i>
             </div>
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Open Deals</span>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Won Leads</span>
         </div>
-        <div class="text-3xl font-black text-slate-800 dark:text-white">{{ number_format($openDeals) }}</div>
+        <div class="text-3xl font-black text-slate-800 dark:text-white">{{ number_format($wonLeads) }}</div>
     </div>
 </div>
 
@@ -331,66 +331,76 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    {{-- Hot Leads --}}
+    {{-- Recent Leads --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
         <div class="px-6 py-4 border-b border-slate-50 dark:border-slate-700 flex justify-between items-center">
-            <h2 class="text-base font-bold text-slate-800 dark:text-white">Hot Leads</h2>
-            <span class="px-2 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-black rounded uppercase tracking-widest">High Potential</span>
+            <h2 class="text-base font-bold text-slate-800 dark:text-white">Recent Leads</h2>
+            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded uppercase tracking-widest">Latest</span>
         </div>
         <div class="divide-y divide-slate-50 dark:divide-slate-700/50 flex-1">
-            @foreach($hotLeads as $lead)
+            @forelse($hotLeads as $lead)
             <div class="px-6 py-3.5 flex items-center justify-between hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-rose-500 flex items-center justify-center text-white text-xs font-black flex-shrink-0 shadow-sm">
-                        {{ strtoupper(substr($lead->name, 0, 2)) }}
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-xs font-black flex-shrink-0 shadow-sm">
+                        <i data-lucide="folder" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <p class="text-sm font-bold text-slate-700 dark:text-slate-200">{{ $lead->name }}</p>
-                        <p class="text-xs text-slate-400 font-medium">{{ $lead->email }}</p>
+                        <a href="{{ route('leads.show', $lead->id) }}" class="text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-500">{{ $lead->project_name }}</a>
+                        <p class="text-xs text-slate-400 font-medium">{{ $lead->client_name }}</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-sm font-black text-slate-800 dark:text-white">{{ $lead->value }}</p>
-                    <div class="flex items-center gap-1 justify-end mt-0.5">
-                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                        <span class="text-[10px] font-bold text-emerald-500">{{ $lead->score }}/100</span>
-                    </div>
+                    @php
+                        $colors = ['Pending' => 'amber', 'Won' => 'emerald', 'Lost' => 'rose'];
+                        $c = $colors[$lead->status] ?? 'slate';
+                    @endphp
+                    <span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest bg-{{$c}}-50 text-{{$c}}-600">
+                        {{ $lead->status }}
+                    </span>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="p-6 text-center text-sm font-bold text-slate-400">No leads found.</div>
+            @endforelse
         </div>
         <div class="px-6 py-3 border-t border-slate-50 dark:border-slate-700 bg-slate-50/30 text-center">
-            <a href="{{ route('leads.index') }}" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-colors">Prioritize all leads →</a>
+            <a href="{{ route('leads.index') }}" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-colors">View all leads →</a>
         </div>
     </div>
 
-    {{-- Today's Follow-ups --}}
+    {{-- Upcoming Follow-ups --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
         <div class="px-6 py-4 border-b border-slate-50 dark:border-slate-700 flex justify-between items-center">
-            <h2 class="text-base font-bold text-slate-800 dark:text-white">Today's Follow-ups</h2>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ now()->format('M d') }}</span>
+            <h2 class="text-base font-bold text-slate-800 dark:text-white">Upcoming Follow-ups</h2>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">This week</span>
         </div>
         <div class="divide-y divide-slate-50 dark:divide-slate-700/50 flex-1">
-            @foreach($todayFollowups as $task)
+            @forelse($todayFollowups as $task)
             <div class="px-6 py-3.5 flex items-start gap-4 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors group">
                 <div class="flex flex-col items-center flex-shrink-0 pt-0.5">
-                    <span class="text-[10px] font-black text-indigo-500 group-hover:scale-110 transition-transform">{{ $task->time }}</span>
+                    <span class="text-[10px] font-black text-indigo-500 group-hover:scale-110 transition-transform">{{ \Carbon\Carbon::parse($task->followup_time)->format('H:i') }}</span>
+                    <span class="text-[9px] font-bold text-slate-400">{{ \Carbon\Carbon::parse($task->followup_date)->format('M d') }}</span>
                 </div>
                 <div class="flex-1">
-                    <p class="text-sm font-bold text-slate-700 dark:text-slate-200">{{ $task->task }}</p>
+                    <a href="{{ route('leads.show', $task->lead->id) }}" class="text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-500">{{ $task->lead->project_name }}</a>
                     <div class="flex items-center gap-1 mt-0.5">
                         <i data-lucide="user" class="w-3 h-3 text-slate-300"></i>
-                        <span class="text-xs text-slate-400 font-medium">{{ $task->lead }}</span>
+                        <span class="text-xs text-slate-400 font-medium">{{ $task->lead->client_name }}</span>
                     </div>
                 </div>
-                <button class="w-8 h-8 rounded-lg border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-300 hover:text-emerald-500 hover:border-emerald-100 hover:bg-emerald-50 transition-all">
-                    <i data-lucide="check" class="w-4 h-4"></i>
-                </button>
+                <form action="{{ route('followups.complete', $task->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-8 h-8 rounded-lg border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-300 hover:text-emerald-500 hover:border-emerald-100 hover:bg-emerald-50 transition-all" title="Mark as Done">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                    </button>
+                </form>
             </div>
-            @endforeach
+            @empty
+            <div class="p-6 text-center text-sm font-bold text-slate-400">No upcoming followups scheduled.</div>
+            @endforelse
         </div>
         <div class="px-6 py-3 border-t border-slate-50 dark:border-slate-700 bg-slate-50/30 text-center">
-            <a href="{{ route('followups.all') }}" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-colors">View all Followups →</a>
+            <a href="{{ route('followups.index') }}" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-colors">View all Followups →</a>
         </div>
     </div>
 </div>

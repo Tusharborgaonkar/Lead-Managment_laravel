@@ -22,15 +22,10 @@ class UpdateFollowupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'type' => 'required|string|in:Call,Meeting,Email,Demo,Legal,Lead',
-            'description' => 'required|string',
-            'scheduled_at' => 'required|date',
+            'lead_id' => 'required|exists:leads,id',
+            'followup_date' => 'required|date',
+            'followup_time' => 'nullable|date_format:H:i',
             'status' => 'required|string|in:Pending,Completed,Cancelled',
-            'lead_id' => 'nullable|exists:leads,id',
-            'customer_id' => 'nullable|exists:customers,id',
-            'deal_id' => 'nullable|exists:deals,id',
-            'assigned_to' => 'nullable|exists:users,id'
         ];
     }
 }

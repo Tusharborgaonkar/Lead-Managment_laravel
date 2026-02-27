@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lead;
+use App\Models\Customer;
 use App\Http\Requests\StoreLeadRequest;
 use App\Http\Requests\UpdateLeadRequest;
+
 class LeadController extends Controller
 {
     /**
@@ -13,87 +15,105 @@ class LeadController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Lead::with(['assignedTo', 'createdBy']);
+        $query = Lead::with('customer');
 
-        // Search
+        // Apply Status Filter
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        // Apply Search Filter
         if ($request->filled('search')) {
-            $query->search($request->search);
-        }
-
-        // Filter by Category
-        if ($request->filled('category') && $request->category !== 'all') {
-            $query->filterByCategory($request->category);
-        }
-
-        // Filter by Source
-        if ($request->filled('source') && $request->source !== 'All Sources') {
-            $query->filterBySource($request->source);
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('client_name', 'like', "%{$search}%")
+                  ->orWhere('project_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function($cq) use ($search) {
+                      $cq->where('name', 'like', "%{$search}%")
+                         ->orWhere('company_name', 'like', "%{$search}%");
+                  });
+            });
         }
 
         $stats = (object)[
             'total' => Lead::count(),
-            'not_interested' => Lead::where('category', 'Not Interested')->count(),
-            'followup' => Lead::where('category', 'Followup')->count(),
-            'pending' => Lead::pending()->count(),
-            'confirm' => Lead::where('category', 'Confirm')->count(),
-            'has_notes' => Lead::where('has_notes', true)->count(),
-            'notes_added_today' => \App\Models\Note::whereDate('created_at', today())->count(),
-            'notes_categories_count' => \App\Models\Note::distinct('category')->count('category')
+            'pending' => Lead::where('status', 'Pending')->count(),
+            'won' => Lead::where('status', 'Won')->count(),
+            'lost' => Lead::where('status', 'Lost')->count(),
         ];
 
-        $leads = $query->latest()->paginate(10);
+        $leads = $query->latest()->paginate(10)->withQueryString();
 
         return view('leads.index', compact('leads', 'stats'));
     }
 
     public function create()
     {
-        $agents = \App\Models\User::where('is_active', true)->get();
-        return view('leads.create', compact('agents'));
+        return view('leads.create');
     }
 
     public function store(StoreLeadRequest $request)
     {
-        $validated = $request->validated();
+        Lead::create($request->validated());
 
-        // Add auth user context
-        $validated['created_by'] = auth()->id() ?? 1;
-
-        Lead::create($validated);
-
-        return redirect()->route('leads.index')->with('success', 'Lead created successfully.');
+        return redirect()->route('leads.index')->with('success', 'Lead (Project) created successfully.');
     }
 
-    public function show($id)
+    public function show(Lead $lead)
     {
-        $lead = Lead::with(['customer', 'deals', 'followups', 'notes.createdBy', 'activityLogs.user'])->findOrFail($id);
+        $lead->load(['customer', 'notes', 'followups']);
         return view('leads.show', compact('lead'));
     }
 
-    public function edit($id)
+    public function edit(Lead $lead)
     {
-        $lead = Lead::findOrFail($id);
-        $agents = \App\Models\User::all();
-        return view('leads.edit', compact('lead', 'agents'));
+        return view('leads.edit', compact('lead'));
     }
 
-    public function update(UpdateLeadRequest $request, $id)
+    public function update(UpdateLeadRequest $request, Lead $lead)
     {
-        $lead = Lead::findOrFail($id);
+        $lead->update($request->validated());
 
-        $validated = $request->validated();
-        $validated['updated_by'] = auth()->id() ?? 1;
-
-        $lead->update($validated);
-
-        return redirect()->route('leads.index')->with('success', 'Lead updated successfully.');
+        return redirect()->route('leads.show', $lead->id)->with('success', 'Lead (Project) updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(Lead $lead)
     {
-        $lead = Lead::findOrFail($id);
         $lead->delete();
-
         return redirect()->route('leads.index')->with('success', 'Lead deleted successfully.');
+    }
+
+    public function convert(Lead $lead)
+    {
+        if ($lead->status !== 'Won') {
+            return back()->with('error', 'Only Won leads can be converted to Customers.');
+        }
+
+        if ($lead->customer_id) {
+            return back()->with('error', 'Lead is already converted.');
+        }
+
+        // Check if customer already exists by phone or email
+        $customer = null;
+        if ($lead->phone || $lead->email) {
+            $query = Customer::query();
+            if ($lead->phone) $query->orWhere('phone', $lead->phone);
+            if ($lead->email) $query->orWhere('email', $lead->email);
+            $customer = $query->first();
+        }
+
+        if (!$customer) {
+            $customer = Customer::create([
+                'name' => $lead->client_name,
+                'phone' => $lead->phone,
+                'email' => $lead->email,
+            ]);
+        }
+
+        $lead->update(['customer_id' => $customer->id]);
+
+        return redirect()->route('customers.show', $customer->id)->with('success', 'Lead converted to Customer successfully.');
     }
 }

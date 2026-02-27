@@ -57,7 +57,7 @@
 
 @php
     $followupsData = $followups->map(function($followup) {
-        $diff = now()->startOfDay()->diffInDays($followup->scheduled_at->startOfDay(), false);
+        $diff = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($followup->followup_date)->startOfDay(), false);
         $badgeClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
         $text = "in $diff days";
         if ($diff == 0) { $badgeClass = 'bg-amber-50 text-amber-600 border-amber-100'; $text = 'Today'; }
@@ -69,8 +69,8 @@
             'lead_name' => $followup->lead->name ?? $followup->customer->name ?? 'N/A',
             'contact_person' => $followup->lead->company ?? $followup->customer->company ?? 'N/A',
             'description' => $followup->description,
-            'followup_date' => $followup->scheduled_at->format('d M Y'),
-            'followup_time' => $followup->scheduled_at->format('H:i'),
+            'followup_date' => \Carbon\Carbon::parse($followup->followup_date)->format('d M Y'),
+            'followup_time' => $followup->followup_time ? \Carbon\Carbon::parse($followup->followup_time)->format('H:i') : '',
             'followup_badge_class' => $badgeClass,
             'followup_badge_text' => $text,
             'status' => $followup->status,

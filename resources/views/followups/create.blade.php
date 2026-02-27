@@ -18,33 +18,31 @@
         <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-50 dark:border-slate-800 shadow-sm overflow-hidden p-10">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
-                {{-- Title --}}
+                {{-- Lead --}}
                 <div class="space-y-3 col-span-full">
-                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Title <span class="text-rose-500">*</span></label>
-                    <input type="text" name="title" value="{{ old('title') }}" required placeholder="e.g. Discuss Q3 Proposal"
-                           class="w-full px-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 shadow-sm" />
-                </div>
-
-                {{-- Type --}}
-                <div class="space-y-3">
-                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Activity Type <span class="text-rose-500">*</span></label>
+                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Related Lead <span class="text-rose-500">*</span></label>
                     <div class="relative">
-                        <select name="type" required class="w-full px-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 appearance-none shadow-sm cursor-pointer">
-                            <option value="Call" {{ old('type') == 'Call' ? 'selected' : '' }}>Call</option>
-                            <option value="Meeting" {{ old('type') == 'Meeting' ? 'selected' : '' }}>Meeting</option>
-                            <option value="Email" {{ old('type') == 'Email' ? 'selected' : '' }}>Email</option>
-                            <option value="Demo" {{ old('type') == 'Demo' ? 'selected' : '' }}>Demo</option>
-                            <option value="Lead" {{ old('type') == 'Lead' ? 'selected' : '' }}>Lead</option>
-                            <option value="Legal" {{ old('type') == 'Legal' ? 'selected' : '' }}>Legal</option>
+                        <select name="lead_id" required class="w-full px-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 appearance-none shadow-sm cursor-pointer">
+                            <option value="">Select a Lead</option>
+                            @foreach($leads as $lead)
+                                <option value="{{ $lead->id }}" {{ old('lead_id') == $lead->id ? 'selected' : '' }}>{{ $lead->project_name }} ({{ $lead->client_name }})</option>
+                            @endforeach
                         </select>
                         <i data-lucide="chevron-down" class="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 pointer-events-none"></i>
                     </div>
                 </div>
 
-                {{-- Scheduled At --}}
+                {{-- Date --}}
                 <div class="space-y-3">
-                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Date & Time <span class="text-rose-500">*</span></label>
-                    <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" required
+                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Date <span class="text-rose-500">*</span></label>
+                    <input type="date" name="followup_date" value="{{ old('followup_date') }}" required
+                           class="w-full px-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 shadow-sm" />
+                </div>
+
+                {{-- Time --}}
+                <div class="space-y-3">
+                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Time</label>
+                    <input type="time" name="followup_time" value="{{ old('followup_time') }}"
                            class="w-full px-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 shadow-sm" />
                 </div>
 
@@ -61,26 +59,7 @@
                     </div>
                 </div>
 
-                {{-- Related Lead --}}
-                <div class="space-y-3">
-                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Related Lead</label>
-                    <div class="relative">
-                        <select name="lead_id" class="w-full px-6 py-4.5 rounded-2xl bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 appearance-none shadow-sm cursor-pointer">
-                            <option value="">None</option>
-                            @foreach($leads as $lead)
-                                <option value="{{ $lead->id }}" {{ old('lead_id') == $lead->id ? 'selected' : '' }}>{{ $lead->name }}</option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 pointer-events-none"></i>
-                    </div>
-                </div>
 
-                {{-- Description --}}
-                <div class="space-y-3 col-span-full">
-                    <label class="block text-[13px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest pl-1">Description <span class="text-rose-500">*</span></label>
-                    <textarea name="description" rows="4" required placeholder="Agenda, notes, or objectives..."
-                              class="w-full px-6 py-5 rounded-[2rem] bg-[#f8faff] dark:bg-slate-800 border-none text-[15px] font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 shadow-sm resize-none">{{ old('description') }}</textarea>
-                </div>
             </div>
 
             <div class="mt-12 flex items-center justify-end gap-4">

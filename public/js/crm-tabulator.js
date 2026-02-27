@@ -75,13 +75,21 @@ function createCRMTable(selector, columns, data, overrides) {
         // Row rendering complete — re-init Lucide icons in new cells
         renderComplete: function () {
             if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
+                // Short delay to ensure DOM is ready for Lucide to scan
+                setTimeout(function () {
+                    crmTableLog('Running Lucide createIcons for renderComplete', selector);
+                    lucide.createIcons();
+                }, 100);
             }
             crmTableLog('Table rendered:', selector);
         },
 
         // Table built callback
         tableBuilt: function () {
+            crmTableLog('Table built event for', selector);
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
             crmTableLog('Table built:', selector);
         },
 
@@ -107,6 +115,15 @@ function createCRMTable(selector, columns, data, overrides) {
 
     try {
         var table = new Tabulator(selector, config);
+
+        // FOOLPROOF FALLBACK: Call lucide again after a short delay
+        setTimeout(function () {
+            if (typeof lucide !== 'undefined') {
+                crmTableLog('Running Lucide fallback for', selector);
+                lucide.createIcons();
+            }
+        }, 200);
+
         return table;
     } catch (e) {
         crmTableWarn('Failed to initialize table:', selector, e);

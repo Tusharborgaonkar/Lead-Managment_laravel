@@ -36,8 +36,11 @@ Route::get('/', function () {
 // Dashboard
 Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
 
-// Leads (full CRUD - static)
 Route::resource('leads', LeadController::class);
+Route::post('/leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
+Route::post('/leads/{lead}/notes', [\App\Http\Controllers\NoteController::class, 'store'])->name('notes.store');
+Route::put('/notes/{note}', [\App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');
+Route::delete('/notes/{note}', [\App\Http\Controllers\NoteController::class, 'destroy'])->name('notes.destroy');
 
 // Customers
 Route::resource('customers', CustomerController::class)->only(['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']);
@@ -45,6 +48,7 @@ Route::resource('customers', CustomerController::class)->only(['index', 'show', 
 // Follow-ups
 Route::get('/followups/all', [FollowupController::class , 'all'])->name('followups.all');
 Route::get('/followups/calendar', [FollowupController::class , 'calendar'])->name('followups.calendar');
+Route::post('/followups/{followup}/complete', [FollowupController::class, 'complete'])->name('followups.complete');
 Route::resource('followups', FollowupController::class)->except(['show']);
 
 // Deals

@@ -23,13 +23,9 @@ class UpdateCustomerRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'company' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:50',
-            'phone_alt' => 'nullable|string|max:50',
-            'group' => 'nullable|string|max:100',
-            'status' => 'required|string|in:active,inactive,pending',
-            'notes' => 'nullable|string'
+            'email' => 'nullable|email|max:255',
+            'company_name' => 'nullable|string|max:255',
         ];
     }
 }

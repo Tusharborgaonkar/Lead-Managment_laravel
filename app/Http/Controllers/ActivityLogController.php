@@ -11,50 +11,24 @@ class ActivityLogController extends Controller
      */
     public function index()
     {
-        $activities = ActivityLog::with('user')->latest()->paginate(15);
+        // STATIC DEMO DATA - NO DATABASE CONNECTION
+        $activities = collect([
+            (object)['id' => 1, 'user_name' => 'Admin User', 'action' => 'created', 'target' => 'Lead #1', 'description' => 'created a new lead', 'time' => '2 hours ago', 'color' => 'emerald', 'icon' => 'plus-circle', 'type' => 'Created'],
+            (object)['id' => 2, 'user_name' => 'System', 'action' => 'updated', 'target' => 'Deal #45', 'description' => 'updated deal status to Negotiation', 'time' => '4 hours ago', 'color' => 'indigo', 'icon' => 'edit-3', 'type' => 'Updated'],
+        ]);
 
-        // Map colors for UI consistency
-        $activities->getCollection()->transform(function ($activity) {
-            $activity->color = match (strtolower($activity->action)) {
-                    'created' => 'emerald',
-                    'updated' => 'indigo',
-                    'deleted' => 'rose',
-                    default => 'slate',
-                };
-            $activity->icon = match (strtolower($activity->action)) {
-                    'created' => 'plus-circle',
-                    'updated' => 'edit-3',
-                    'deleted' => 'trash-2',
-                    default => 'activity',
-                };
-            $activity->user_name = $activity->user->name ?? 'System';
-            $activity->time = $activity->created_at->diffForHumans();
-            $activity->type = ucfirst($activity->action);
-            $activity->target = class_basename($activity->entity_type) . ' #' . $activity->entity_id;
-
-            return $activity;
-        });
+        $activities = new \Illuminate\Pagination\LengthAwarePaginator($activities, 2, 15);
 
         return view('activity.index', compact('activities'));
     }
 
     public function destroy($id)
     {
-        $log = ActivityLog::findOrFail($id);
-        $log->delete();
-
-        return redirect()->route('activity.index')->with('success', 'Activity log deleted successfully.');
+        return redirect()->route('activity.index')->with('success', 'Static Demo: Log entry deletion simulated.');
     }
 
     public function update(Request $request, $id)
     {
-        $log = ActivityLog::findOrFail($id);
-
-        $log->update([
-            'action' => $request->action ?? $log->action,
-            'description' => $request->description ?? $log->description,
-        ]);
-
-        return redirect()->route('activity.index')->with('success', 'Activity log updated successfully.');
+        return redirect()->route('activity.index')->with('success', 'Static Demo: Log entry update simulated.');
     }
 }
