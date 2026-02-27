@@ -12,7 +12,7 @@
                 </a>
                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100">Project / Lead</span>
                 @php
-                    $colors = ['Pending' => 'amber', 'Won' => 'emerald', 'Lost' => 'rose'];
+                    $colors = ['Pending' => 'amber', 'Confirm' => 'emerald', 'Not Interested' => 'rose', 'Followup' => 'indigo'];
                     $c = $colors[$lead->status] ?? 'slate';
                 @endphp
                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-{{$c}}-50 text-{{$c}}-600 border border-{{$c}}-100">
@@ -30,8 +30,8 @@
         </div>
 
         <div class="flex gap-3">
-            @if($lead->status === 'Won' && !$lead->customer_id)
-            <form action="{{ route('leads.convert', $lead->id) }}" method="POST" onsubmit="return confirm('Covert this Lead to a Customer?');">
+            @if($lead->status === 'Confirm' && !$lead->customer_id)
+            <form action="{{ route('leads.convert', $lead->id) }}" method="POST" data-confirm="Convert this Lead to a Customer?">
                 @csrf
                 <button type="submit" class="px-5 py-2.5 bg-emerald-600 border border-emerald-500 text-white rounded-xl font-bold shadow-sm hover:bg-emerald-700 transition active:scale-95 flex items-center gap-2">
                     <i data-lucide="user-check" class="w-4 h-4"></i> Convert to Customer

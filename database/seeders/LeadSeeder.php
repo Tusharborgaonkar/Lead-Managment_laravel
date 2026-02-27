@@ -42,7 +42,7 @@ class LeadSeeder extends Seeder
             'phone' => $customer->phone,
             'email' => $customer->email,
             'project_name' => 'ERP System Integration',
-            'status' => 'Won',
+            'status' => 'Confirm',
             'customer_id' => $customer->id,
         ]);
 
@@ -64,7 +64,7 @@ class LeadSeeder extends Seeder
             'phone' => '+1 555-0200',
             'email' => 'bob@competitor.com',
             'project_name' => 'Marketing Website',
-            'status' => 'Lost',
+            'status' => 'Not Interested',
         ]);
 
         Note::create([

@@ -47,8 +47,9 @@
                         <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Status <span class="text-rose-500">*</span></label>
                         <select name="status" required class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
                             <option value="Pending" {{ old('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="Won" {{ old('status') === 'Won' ? 'selected' : '' }}>Won</option>
-                            <option value="Lost" {{ old('status') === 'Lost' ? 'selected' : '' }}>Lost</option>
+                            <option value="Confirm" {{ old('status') === 'Confirm' ? 'selected' : '' }}>Confirm</option>
+                            <option value="Followup" {{ old('status') === 'Followup' ? 'selected' : '' }}>Followup</option>
+                            <option value="Not Interested" {{ old('status') === 'Not Interested' ? 'selected' : '' }}>Not Interested</option>
                         </select>
                     </div>
                 </div>

@@ -15,7 +15,7 @@ class FollowupController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Followup::with('lead.customer');
+        $query = Followup::with('lead.customer')->has('lead');
 
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
@@ -30,6 +30,7 @@ class FollowupController extends Controller
     public function upcoming()
     {
         $followups = Followup::with('lead.customer')
+            ->has('lead')
             ->where('status', 'Pending')
             ->whereDate('followup_date', '>=', now()->toDateString())
             ->orderBy('followup_date', 'asc')

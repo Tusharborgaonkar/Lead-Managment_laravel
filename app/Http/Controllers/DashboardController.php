@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $totalLeads = Lead::count();
         $totalCustomers = Customer::count();
         $pendingLeads = Lead::where('status', 'Pending')->count();
-        $wonLeads = Lead::where('status', 'Won')->count();
+        $wonLeads = Lead::where('status', 'Confirm')->count();
 
         // Target / Revenue - Placeholder for now
         $salesTarget = (object)[
@@ -37,7 +37,7 @@ class DashboardController extends Controller
         $funnelMetrics = [
             ['label' => 'Total Leads', 'count' => $totalLeads, 'color' => 'indigo', 'percentage' => 100],
             ['label' => 'Pending', 'count' => $pendingLeads, 'color' => 'amber', 'percentage' => $totalLeads ? ($pendingLeads/$totalLeads)*100 : 0],
-            ['label' => 'Won', 'count' => $wonLeads, 'color' => 'emerald', 'percentage' => $totalLeads ? ($wonLeads/$totalLeads)*100 : 0],
+            ['label' => 'Confirm', 'count' => $wonLeads, 'color' => 'emerald', 'percentage' => $totalLeads ? ($wonLeads/$totalLeads)*100 : 0],
         ];
 
         $leadsBySource = [
@@ -51,6 +51,7 @@ class DashboardController extends Controller
         $hotLeads = Lead::with('customer')->latest()->take(4)->get();
 
         $todayFollowups = Followup::with(['lead.customer'])
+            ->has('lead')
             ->where('status', 'Pending')
             ->whereDate('followup_date', '>=', now()->toDateString())
             ->orderBy('followup_date', 'asc')

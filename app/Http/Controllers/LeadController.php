@@ -22,26 +22,27 @@ class LeadController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Apply Search Filter
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('client_name', 'like', "%{$search}%")
-                  ->orWhere('project_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($cq) use ($search) {
-                      $cq->where('name', 'like', "%{$search}%")
-                         ->orWhere('company_name', 'like', "%{$search}%");
-                  });
-            });
-        }
+    // Apply Search Filter
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('client_name', 'like', "%{$search}%")
+              ->orWhere('project_name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('phone', 'like', "%{$search}%")
+              ->orWhereHas('customer', function($cq) use ($search) {
+                  $cq->where('name', 'like', "%{$search}%")
+                     ->orWhere('company_name', 'like', "%{$search}%");
+              });
+        });
+    }
 
         $stats = (object)[
             'total' => Lead::count(),
             'pending' => Lead::where('status', 'Pending')->count(),
-            'won' => Lead::where('status', 'Won')->count(),
-            'lost' => Lead::where('status', 'Lost')->count(),
+            'won' => Lead::where('status', 'Confirm')->count(),
+            'lost' => Lead::where('status', 'Not Interested')->count(),
+            'followup' => Lead::where('status', 'Followup')->count(),
         ];
 
         $leads = $query->latest()->paginate(10)->withQueryString();
@@ -79,6 +80,17 @@ class LeadController extends Controller
         return redirect()->route('leads.show', $lead->id)->with('success', 'Lead (Project) updated successfully.');
     }
 
+    public function updateStatus(Request $request, Lead $lead)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:Pending,Confirm,Not Interested,Followup',
+        ]);
+        
+        $lead->update(['status' => $validated['status']]);
+        
+        return back()->with('success', 'Lead status updated instantly.');
+    }
+
     public function destroy(Lead $lead)
     {
         $lead->delete();
@@ -87,8 +99,8 @@ class LeadController extends Controller
 
     public function convert(Lead $lead)
     {
-        if ($lead->status !== 'Won') {
-            return back()->with('error', 'Only Won leads can be converted to Customers.');
+        if ($lead->status !== 'Confirm') {
+            return back()->with('error', 'Only confirmed leads can be converted to a customer.');
         }
 
         if ($lead->customer_id) {

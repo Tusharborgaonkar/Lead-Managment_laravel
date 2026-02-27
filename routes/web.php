@@ -33,53 +33,55 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-// Dashboard
-Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
 
-Route::resource('leads', LeadController::class);
-Route::post('/leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
-Route::post('/leads/{lead}/notes', [\App\Http\Controllers\NoteController::class, 'store'])->name('notes.store');
-Route::put('/notes/{note}', [\App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');
-Route::delete('/notes/{note}', [\App\Http\Controllers\NoteController::class, 'destroy'])->name('notes.destroy');
+    Route::resource('leads', LeadController::class);
+    Route::patch('/leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.updateStatus');
+    Route::post('/leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
+    Route::post('/leads/{lead}/notes', [\App\Http\Controllers\NoteController::class, 'store'])->name('notes.store');
+    Route::put('/notes/{note}', [\App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');
+    Route::delete('/notes/{note}', [\App\Http\Controllers\NoteController::class, 'destroy'])->name('notes.destroy');
 
-// Customers
-Route::resource('customers', CustomerController::class)->only(['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']);
+    // Customers
+    Route::resource('customers', CustomerController::class)->only(['index', 'show', 'create', 'edit', 'store', 'update', 'destroy']);
 
-// Follow-ups
-Route::get('/followups/all', [FollowupController::class , 'all'])->name('followups.all');
-Route::get('/followups/calendar', [FollowupController::class , 'calendar'])->name('followups.calendar');
-Route::post('/followups/{followup}/complete', [FollowupController::class, 'complete'])->name('followups.complete');
-Route::resource('followups', FollowupController::class)->except(['show']);
+    // Follow-ups
+    Route::get('/followups/all', [FollowupController::class , 'all'])->name('followups.all');
+    Route::get('/followups/calendar', [FollowupController::class , 'calendar'])->name('followups.calendar');
+    Route::post('/followups/{followup}/complete', [FollowupController::class, 'complete'])->name('followups.complete');
+    Route::resource('followups', FollowupController::class)->except(['show']);
 
-// Deals
-Route::resource('deals', DealController::class);
 
-// Activity Log
-Route::get('/activity', [ActivityLogController::class , 'index'])->name('activity.index');
-Route::put('/activity/{id}', [ActivityLogController::class , 'update'])->name('activity.update');
-Route::delete('/activity/{id}', [ActivityLogController::class , 'destroy'])->name('activity.destroy');
 
-// Notifications
-Route::prefix('notifications')->name('notifications.')->group(function () {
-    Route::get('/', [NotificationController::class , 'index'])->name('index');
-    Route::post('/mark-all', [NotificationController::class , 'markAllRead'])->name('markAllRead');
-    Route::post('/{notification}/mark-read', [NotificationController::class , 'markRead'])->name('markRead');
-    Route::delete('/{notification}', [NotificationController::class , 'destroy'])->name('destroy');
-});
+    // Activity Log
+    Route::get('/activity', [ActivityLogController::class , 'index'])->name('activity.index');
+    Route::put('/activity/{id}', [ActivityLogController::class , 'update'])->name('activity.update');
+    Route::delete('/activity/{id}', [ActivityLogController::class , 'destroy'])->name('activity.destroy');
 
-// Settings
-Route::get('/settings', [SettingsController::class , 'index'])->name('settings.index');
-Route::put('/settings', [SettingsController::class , 'update'])->name('settings.update');
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class , 'index'])->name('index');
+        Route::post('/mark-all', [NotificationController::class , 'markAllRead'])->name('markAllRead');
+        Route::post('/{notification}/mark-read', [NotificationController::class , 'markRead'])->name('markRead');
+        Route::delete('/{notification}', [NotificationController::class , 'destroy'])->name('destroy');
+    });
 
-// Users & Roles management
-Route::prefix('users')->name('users.')->group(function () {
-    Route::get('/', [UserController::class , 'index'])->name('index');
-    Route::post('/', [UserController::class , 'store'])->name('store');
-    Route::put('/{user}', [UserController::class , 'update'])->name('update');
-    Route::delete('/{user}', [UserController::class , 'destroy'])->name('destroy');
+    // Settings
+    Route::get('/settings', [SettingsController::class , 'index'])->name('settings.index');
+    Route::put('/settings', [SettingsController::class , 'update'])->name('settings.update');
 
-    // Roles sub-page
-    Route::get('/roles', [UserController::class , 'roles'])->name('roles');
-    Route::post('/roles', [UserController::class , 'storeRole'])->name('roles.store');
-    Route::delete('/roles/{role}', [UserController::class , 'destroyRole'])->name('roles.destroy');
+    // Users & Roles management
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class , 'index'])->name('index');
+        Route::post('/', [UserController::class , 'store'])->name('store');
+        Route::put('/{user}', [UserController::class , 'update'])->name('update');
+        Route::delete('/{user}', [UserController::class , 'destroy'])->name('destroy');
+
+        // Roles sub-page
+        Route::get('/roles', [UserController::class , 'roles'])->name('roles');
+        Route::post('/roles', [UserController::class , 'storeRole'])->name('roles.store');
+        Route::delete('/roles/{role}', [UserController::class , 'destroyRole'])->name('roles.destroy');
+    });
 });

@@ -94,36 +94,60 @@
         --------------------------------------------------- */
         document.querySelectorAll('form[data-confirm]').forEach(function (form) {
             form.addEventListener('submit', function (e) {
-                if (!window.confirm(form.dataset.confirm)) {
-                    e.preventDefault();
+                e.preventDefault();
+                const confirmMessage = form.dataset.confirm;
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: confirmMessage,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e11d48',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'Cancel',
+                        padding: '2rem',
+                        borderRadius: '1.5rem',
+                        customClass: {
+                            title: 'text-2xl font-black text-slate-800 dark:text-white',
+                            htmlContainer: 'text-sm font-medium text-slate-500 dark:text-slate-400 mt-2',
+                            confirmButton: 'px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest',
+                            cancelButton: 'px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                } else {
+                    if (window.confirm(confirmMessage)) {
+                        form.submit();
+                    }
                 }
             });
         });
     });
 
     /* ---------------------------------------------------
-       High-Fidelity Toast System
+       High-Fidelity Toast System (Toastr integration)
     --------------------------------------------------- */
     window.showToast = function (message, type = 'success', duration = 4000) {
-        const toast = document.createElement('div');
-        const colors = {
-            success: 'bg-emerald-600 shadow-emerald-500/25',
-            error: 'bg-rose-600 shadow-rose-500/25',
-            info: 'bg-indigo-600 shadow-indigo-500/25'
-        };
+        if (typeof toastr !== 'undefined') {
+            toastr[type === 'error' ? 'error' : (type === 'success' ? 'success' : 'info')](message);
+        } else {
+            // ... fallback logic if needed
+            alert(message);
+        }
+    };
 
-        toast.className = `fixed bottom-8 right-8 px-8 py-4 ${colors[type] || colors.success} text-white rounded-[1.5rem] font-black text-sm shadow-2xl z-[999] animate-in fade-in slide-in-from-bottom-4 duration-300 flex items-center gap-3`;
-
-        const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'alert-circle' : 'info');
-        toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> <span>${message}</span>`;
-
-        document.body.appendChild(toast);
-        if (window.lucide) lucide.createIcons();
-
-        setTimeout(() => {
-            toast.classList.add('animate-out', 'fade-out', 'slide-out-to-bottom-4');
-            setTimeout(() => toast.remove(), 300);
-        }, duration);
+    // Global override for generic JS alerts to use Toastr instead of native browser popup.
+    window.alert = function (message) {
+        if (typeof toastr !== 'undefined') {
+            toastr.info(message);
+        } else {
+            console.log("Alert Intercepted: " + message);
+        }
     };
 
     /* ---------------------------------------------------

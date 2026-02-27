@@ -26,7 +26,7 @@ class UpdateLeadRequest extends FormRequest
             'phone' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
             'project_name' => 'required|string|max:255',
-            'status' => 'required|string|in:Pending,Won,Lost',
+            'status' => 'required|string|in:Pending,Confirm,Not Interested,Followup',
         ];
     }
 }

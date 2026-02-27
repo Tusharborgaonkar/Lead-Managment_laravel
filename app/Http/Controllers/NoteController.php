@@ -14,6 +14,7 @@ class NoteController extends Controller
             'note' => 'required|string',
         ]);
 
+        $validated['created_by'] = auth()->id();
         $lead->notes()->create($validated);
 
         return back()->with('success', 'Note added successfully.');

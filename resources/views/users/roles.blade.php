@@ -22,7 +22,7 @@
                 <p class="text-xs text-slate-400 mt-0.5">{{ $role->users_count }} {{ Str::plural('user', $role->users_count) }}</p>
             </div>
             @if($role->users_count === 0)
-            <form method="POST" action="{{ route('users.roles.destroy', $role->id) }}" onsubmit="return confirm('Delete role: {{ $role->name }}?')">
+            <form method="POST" action="{{ route('users.roles.destroy', $role->id) }}" data-confirm="Delete role: {{ $role->name }}?">
 
                 @csrf @method('DELETE')
                 <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Delete role">

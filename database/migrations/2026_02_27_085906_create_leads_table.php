@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('project_name');
-            $table->enum('status', ['Pending', 'Won', 'Lost'])->default('Pending');
+            $table->enum('status', ['Pending', 'Confirm', 'Not Interested', 'Followup'])->default('Pending');
             $table->foreignId('customer_id')->nullable()->constrained('customers')->nullOnDelete();
             $table->date('next_followup_date')->nullable();
             $table->time('next_followup_time')->nullable();
