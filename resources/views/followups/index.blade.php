@@ -7,8 +7,8 @@
         <a href="{{ route('dashboard') }}" class="text-sm text-indigo-500 hover:text-indigo-600 font-medium flex items-center gap-1.5 mb-3 leading-none">
             <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
         </a>
-        <h1 class="text-2xl font-black text-slate-800 dark:text-white">Overdue Follow-ups</h1>
-        <p class="text-sm text-slate-400 mt-0.5">7 items require your attention based on inactivity.</p>
+        <h1 class="text-2xl font-black text-slate-800 dark:text-white">Follow-ups</h1>
+        <p class="text-sm text-slate-400 mt-0.5">Manage and track your scheduled follow-up activities.</p>
     </div>
     <div class="flex items-center gap-3">
         <div class="relative">
