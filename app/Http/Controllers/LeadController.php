@@ -7,9 +7,11 @@ use App\Models\Lead;
 use App\Models\Customer;
 use App\Http\Requests\StoreLeadRequest;
 use App\Http\Requests\UpdateLeadRequest;
+use App\Traits\LogsActivity;
 
 class LeadController extends Controller
 {
+    use LogsActivity;
     /**
      * Display a listing of leads.
      */
@@ -76,7 +78,9 @@ class LeadController extends Controller
             $data['customer_id'] = $customer->id;
         }
 
-        Lead::create($data);
+        $lead = Lead::create($data);
+
+        $this->logActivity('created', $lead, "Created a new lead: {$lead->project_name}");
 
         return redirect()->route('leads.index')->with('success', 'Lead (Project) created successfully.');
     }
@@ -96,6 +100,8 @@ class LeadController extends Controller
     {
         $lead->update($request->validated());
 
+        $this->logActivity('updated', $lead, "Updated lead details for: {$lead->project_name}");
+
         return redirect()->route('leads.show', $lead->id)->with('success', 'Lead (Project) updated successfully.');
     }
 
@@ -107,11 +113,14 @@ class LeadController extends Controller
         
         $lead->update(['status' => $validated['status']]);
         
+        $this->logActivity('status_updated', $lead, "Updated lead status to {$validated['status']} for: {$lead->project_name}");
+        
         return back()->with('success', 'Lead status updated instantly.');
     }
 
     public function destroy(Lead $lead)
     {
+        $this->logActivity('deleted', $lead, "Deleted lead: {$lead->project_name}");
         $lead->delete();
         return redirect()->route('leads.index')->with('success', 'Lead deleted successfully.');
     }
@@ -144,6 +153,8 @@ class LeadController extends Controller
         }
 
         $lead->update(['customer_id' => $customer->id]);
+
+        $this->logActivity('converted', $lead, "Converted lead {$lead->project_name} to customer {$customer->name}");
 
         return redirect()->route('customers.show', $customer->id)->with('success', 'Lead converted to Customer successfully.');
     }

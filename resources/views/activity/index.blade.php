@@ -40,7 +40,7 @@
 <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800/60 shadow-sm overflow-hidden">
     <div class="p-8">
         <div class="relative space-y-12 before:absolute before:inset-0 before:ml-6 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-100 dark:before:via-slate-800 before:to-transparent">
-            @foreach($activities as $act)
+            @forelse($activities as $act)
             <div class="relative flex items-start gap-8 group" data-id="{{ $act->id }}" data-user="{{ $act->user_name }}" data-action="{{ $act->action }}" data-target="{{ $act->target }}" data-type="{{ $act->type }}" data-color="{{ $act->color }}" data-icon="{{ $act->icon }}">
                 {{-- Icon Indicator --}}
                 <div class="w-12 h-12 rounded-2xl bg-{{ $act->color }}-50 dark:bg-{{ $act->color }}-900/20 flex items-center justify-center flex-shrink-0 z-10 border-4 border-white dark:border-slate-900 shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md">
@@ -79,7 +79,15 @@
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="flex flex-col items-center justify-center py-20 text-center">
+                <div class="w-20 h-20 rounded-3xl bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center mb-6">
+                    <i data-lucide="history" class="w-10 h-10 text-slate-200"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 dark:text-white">No activities yet</h3>
+                <p class="text-slate-400 max-w-xs mt-2 font-medium">System events and user actions will be logged here automatically as they occur.</p>
+            </div>
+            @endforelse
     </div>
     
     <div class="bg-slate-50/50 dark:bg-slate-900/50 p-6 border-t border-slate-100 dark:border-slate-800/60 text-center">

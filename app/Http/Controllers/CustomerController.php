@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Traits\LogsActivity;
 
 class CustomerController extends Controller
 {
+    use LogsActivity;
     /**
      * Display a listing of customers.
      */
@@ -43,7 +45,8 @@ class CustomerController extends Controller
 
     public function store(StoreCustomerRequest $request)
     {
-        Customer::create($request->validated());
+        $customer = Customer::create($request->validated());
+        $this->logActivity('created', $customer, "Created a new customer: {$customer->name}");
         return redirect()->route('customers.index')->with('success', 'Customer created successfully.');
     }
 
@@ -63,12 +66,14 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
         $customer->update($request->validated());
+        $this->logActivity('updated', $customer, "Updated customer details for: {$customer->name}");
         return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
     }
 
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
+        $this->logActivity('deleted', $customer, "Deleted customer: {$customer->name}");
         $customer->delete();
         return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
     }

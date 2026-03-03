@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\{Lead, Customer, Followup};
+use App\Models\{Lead, Customer, Followup, ActivityLog};
 
 class DashboardController extends Controller
 {
@@ -130,7 +130,47 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $recentActivities = collect([]);
+        $recentActivities = ActivityLog::with('user')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($log) {
+                $icon = 'activity';
+                $color = 'slate';
+                
+                switch ($log->action) {
+                    case 'created':
+                        $icon = 'plus-circle';
+                        $color = 'emerald';
+                        break;
+                    case 'updated':
+                    case 'status_updated':
+                        $icon = 'edit-3';
+                        $color = 'indigo';
+                        break;
+                    case 'deleted':
+                        $icon = 'trash-2';
+                        $color = 'rose';
+                        break;
+                    case 'converted':
+                        $icon = 'refresh-cw';
+                        $color = 'amber';
+                        break;
+                    case 'completed':
+                        $icon = 'check-circle';
+                        $color = 'emerald';
+                        break;
+                }
+
+                return (object)[
+                    'user' => $log->user->name ?? 'System',
+                    'action' => str_replace('_', ' ', $log->action),
+                    'target' => $log->description,
+                    'time' => $log->created_at->diffForHumans(),
+                    'icon' => $icon,
+                    'color' => $color
+                ];
+            });
 
         $unreadNotifications = 0;
 

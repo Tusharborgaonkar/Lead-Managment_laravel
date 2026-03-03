@@ -7,9 +7,11 @@ use App\Models\Followup;
 use App\Models\Lead;
 use App\Http\Requests\StoreFollowupRequest;
 use App\Http\Requests\UpdateFollowupRequest;
+use App\Traits\LogsActivity;
 
 class FollowupController extends Controller
 {
+    use LogsActivity;
     /**
      * Display a listing of follow-ups.
      */
@@ -48,7 +50,8 @@ class FollowupController extends Controller
 
     public function store(StoreFollowupRequest $request)
     {
-        Followup::create($request->validated());
+        $followup = Followup::create($request->validated());
+        $this->logActivity('created', $followup, "Scheduled a new follow-up for lead: {$followup->lead->project_name}");
         return back()->with('success', 'Follow-up scheduled successfully.');
     }
 
@@ -61,11 +64,13 @@ class FollowupController extends Controller
     public function update(UpdateFollowupRequest $request, Followup $followup)
     {
         $followup->update($request->validated());
+        $this->logActivity('updated', $followup, "Updated follow-up for lead: {$followup->lead->project_name}");
         return back()->with('success', 'Follow-up updated successfully.');
     }
 
     public function destroy(Followup $followup)
     {
+        $this->logActivity('deleted', $followup, "Deleted follow-up for lead: {$followup->lead->project_name}");
         $followup->delete();
         return back()->with('success', 'Follow-up deleted successfully.');
     }
@@ -74,6 +79,7 @@ class FollowupController extends Controller
     public function complete(Followup $followup)
     {
         $followup->update(['status' => 'Completed']);
+        $this->logActivity('completed', $followup, "Marked follow-up as completed for lead: {$followup->lead->project_name}");
         return back()->with('success', 'Follow-up marked as completed.');
     }
 }

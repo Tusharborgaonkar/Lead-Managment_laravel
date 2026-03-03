@@ -423,7 +423,7 @@
         </div>
         <div class="p-6">
             <div class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-100 before:to-transparent">
-                @foreach($recentActivities as $activity)
+                @forelse($recentActivities as $activity)
                 <div class="relative flex items-center justify-between group">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 rounded-full bg-{{ $activity->color }}-50 dark:bg-{{ $activity->color }}-900/20 flex items-center justify-center flex-shrink-0 z-10 border-4 border-white dark:border-slate-800 shadow-sm transition-transform group-hover:scale-110">
@@ -442,7 +442,15 @@
                         {{ $activity->time }}
                     </div>
                 </div>
-                @endforeach
+                @empty
+                <div class="flex flex-col items-center justify-center py-8 text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center mb-3">
+                        <i data-lucide="activity" class="w-6 h-6 text-slate-300"></i>
+                    </div>
+                    <p class="text-sm font-bold text-slate-400">No recent activity found.</p>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">New actions will appear here automatically.</p>
+                </div>
+                @endforelse
             </div>
         </div>
     </div>
