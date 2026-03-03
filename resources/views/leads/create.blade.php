@@ -19,28 +19,42 @@
 
             <div class="p-8 md:p-10">
                 <div class="space-y-8">
+                    @if ($errors->any())
+                        <div class="bg-rose-50 border border-rose-100 rounded-2xl p-4">
+                            <ul class="list-disc list-inside text-sm text-rose-600 font-bold">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @php
+                        $defaultType = request('customer_id') ? 'existing' : 'new';
+                        $currentType = old('customer_type', $defaultType);
+                    @endphp
                     <!-- Customer Type Toggle -->
                     <div class="flex flex-col gap-4">
                         <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Customer Selection <span class="text-rose-500">*</span></label>
                         <div class="flex p-1 bg-slate-100 rounded-2xl w-fit">
-                            <input type="hidden" name="customer_type" id="customer_type" value="{{ old('customer_type', 'new') }}">
-                            <button type="button" onclick="toggleCustomerType('new')" id="btn_new" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all {{ old('customer_type', 'new') === 'new' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+                            <input type="hidden" name="customer_type" id="customer_type" value="{{ $currentType }}">
+                            <button type="button" onclick="toggleCustomerType('new')" id="btn_new" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all {{ $currentType === 'new' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
                                 New Customer
                             </button>
-                            <button type="button" onclick="toggleCustomerType('existing')" id="btn_existing" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all {{ old('customer_type') === 'existing' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+                            <button type="button" onclick="toggleCustomerType('existing')" id="btn_existing" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all {{ $currentType === 'existing' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
                                 Existing Customer
                             </button>
                         </div>
                     </div>
 
                     <!-- Existing Customer Selection -->
-                    <div id="existing_customer_section" class="{{ old('customer_type') === 'existing' ? '' : 'hidden' }} space-y-8">
+                    <div id="existing_customer_section" class="{{ $currentType === 'existing' ? '' : 'hidden' }} space-y-8">
                         <div class="flex flex-col gap-2.5">
                             <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Select Existing Customer <span class="text-rose-500">*</span></label>
                             <select name="customer_id" id="customer_id" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
                                 <option value="">-- Choose a Customer --</option>
                                 @foreach($customers as $customer)
-                                    <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
+                                    <option value="{{ $customer->id }}" {{ old('customer_id', request('customer_id')) == $customer->id ? 'selected' : '' }}>
                                         {{ $customer->name }} {{ $customer->phone ? "({$customer->phone})" : '' }}
                                     </option>
                                 @endforeach
@@ -49,17 +63,10 @@
                     </div>
 
                     <!-- New Customer Fields -->
-                    <div id="new_customer_section" class="{{ old('customer_type', 'new') === 'new' ? '' : 'hidden' }} space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="flex flex-col gap-2.5">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Client Name <span class="text-rose-500">*</span></label>
-                                <input type="text" name="client_name" id="client_name" value="{{ old('client_name') }}" placeholder="e.g. John Doe" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
-                            </div>
-
-                            <div class="flex flex-col gap-2.5">
-                                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Project Name <span class="text-rose-500">*</span></label>
-                                <input type="text" name="project_name" value="{{ old('project_name') }}" required placeholder="e.g. eCommerce Website Redesign" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
-                            </div>
+                    <div id="new_customer_section" class="{{ $currentType === 'new' ? '' : 'hidden' }} space-y-8">
+                        <div class="flex flex-col gap-2.5">
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Client Name <span class="text-rose-500">*</span></label>
+                            <input type="text" name="client_name" id="client_name" value="{{ old('client_name') }}" placeholder="e.g. John Doe" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -75,20 +82,22 @@
                         </div>
                     </div>
 
-                    <!-- Common Project Info (Only shown if Existing selected, otherwise handled in New Section grid) -->
-                    <div id="project_info_existing" class="{{ old('customer_type') === 'existing' ? '' : 'hidden' }} flex flex-col gap-2.5">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Project Name <span class="text-rose-500">*</span></label>
-                        <input type="text" name="project_name_existing" id="project_name_existing" value="{{ old('project_name') }}" placeholder="e.g. eCommerce Website Redesign" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
-                    </div>
+                    <!-- Global Project Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2.5">
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Project Name <span class="text-rose-500">*</span></label>
+                            <input type="text" name="project_name" value="{{ old('project_name') }}" required placeholder="e.g. eCommerce Website Redesign" class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
+                        </div>
 
-                    <div class="flex flex-col gap-2.5">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Status <span class="text-rose-500">*</span></label>
-                        <select name="status" required class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
-                            <option value="Pending" {{ old('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="Confirm" {{ old('status') === 'Confirm' ? 'selected' : '' }}>Confirm</option>
-                            <option value="Followup" {{ old('status') === 'Followup' ? 'selected' : '' }}>Followup</option>
-                            <option value="Not Interested" {{ old('status') === 'Not Interested' ? 'selected' : '' }}>Not Interested</option>
-                        </select>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Status <span class="text-rose-500">*</span></label>
+                            <select name="status" required class="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:border-indigo-500 outline-none">
+                                <option value="Pending" {{ old('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="Confirm" {{ old('status') === 'Confirm' ? 'selected' : '' }}>Confirm</option>
+                                <option value="Followup" {{ old('status') === 'Followup' ? 'selected' : '' }}>Followup</option>
+                                <option value="Not Interested" {{ old('status') === 'Not Interested' ? 'selected' : '' }}>Not Interested</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,7 +109,6 @@
                     const btnExisting = document.getElementById('btn_existing');
                     const sectionNew = document.getElementById('new_customer_section');
                     const sectionExisting = document.getElementById('existing_customer_section');
-                    const projectExisting = document.getElementById('project_info_existing');
                     
                     input.value = type;
                     
@@ -112,13 +120,6 @@
                         
                         sectionNew.classList.remove('hidden');
                         sectionExisting.classList.add('hidden');
-                        projectExisting.classList.add('hidden');
-                        
-                        // Sync project names if one was typed
-                        const existingProj = document.getElementById('project_info_existing').querySelector('input');
-                        const newProj = sectionNew.querySelector('input[name="project_name"]');
-                        if (existingProj.value) newProj.value = existingProj.value;
-                        
                     } else {
                         btnExisting.classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
                         btnExisting.classList.remove('text-slate-500');
@@ -127,25 +128,8 @@
                         
                         sectionExisting.classList.remove('hidden');
                         sectionNew.classList.add('hidden');
-                        projectExisting.classList.remove('hidden');
-
-                        // Sync project names
-                        const existingProj = document.getElementById('project_info_existing').querySelector('input');
-                        const newProj = sectionNew.querySelector('input[name="project_name"]');
-                        if (newProj.value) existingProj.value = newProj.value;
                     }
                 }
-
-                // Handle form submission to ensure project_name is always in the right field
-                document.querySelector('form').addEventListener('submit', function(e) {
-                    const type = document.getElementById('customer_type').value;
-                    const newProj = document.querySelector('input[name="project_name"]');
-                    const existingProj = document.getElementById('project_name_existing');
-                    
-                    if (type === 'existing') {
-                        newProj.value = existingProj.value;
-                    }
-                });
             </script>
 
             <div class="p-8 md:p-10 bg-slate-50/50 flex items-center justify-end gap-4">
