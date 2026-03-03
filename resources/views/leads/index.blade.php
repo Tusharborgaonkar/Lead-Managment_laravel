@@ -123,74 +123,8 @@
         </div>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700/50">
-                    <th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Project Title</th>
-                    <th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Customer</th>
-                    <th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Status</th>
-                    <th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Created</th>
-                    <th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-50 dark:divide-slate-700/50">
-                @forelse($leads as $lead)
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 group transition-colors">
-                    <td class="px-6 py-4">
-                        <a href="{{ route('leads.show', $lead->id) }}" class="text-sm font-black text-slate-800 dark:text-white hover:text-indigo-600 transition-colors">
-                            {{ $lead->project_name }}
-                        </a>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex flex-col">
-                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300 drop-shadow-sm">{{ $lead->client_name }}</span>
-                            <span class="text-[11px] font-medium text-slate-400">{{ $lead->phone ?? '—' }} | {{ $lead->email ?? '—' }}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        @php
-                            $colors = ['Pending' => 'amber', 'Confirm' => 'emerald', 'Not Interested' => 'rose', 'Followup' => 'indigo'];
-                            $c = $colors[$lead->status] ?? 'slate';
-                        @endphp
-                        <form action="{{ route('leads.updateStatus', $lead->id) }}" method="POST" class="m-0 inline-block">
-                            @csrf
-                            @method('PATCH')
-                            <select name="status" onchange="this.form.submit()" class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-{{$c}}-50 text-{{$c}}-600 border border-{{$c}}-100 focus:ring-0 focus:outline-none cursor-pointer appearance-none pr-6">
-                                <option class="text-slate-700 bg-white" value="Pending" {{ $lead->status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                <option class="text-slate-700 bg-white" value="Followup" {{ $lead->status == 'Followup' ? 'selected' : '' }}>Followup</option>
-                                <option class="text-slate-700 bg-white" value="Confirm" {{ $lead->status == 'Confirm' ? 'selected' : '' }}>Confirm</option>
-                                <option class="text-slate-700 bg-white" value="Not Interested" {{ $lead->status == 'Not Interested' ? 'selected' : '' }}>Not Interested</option>
-                            </select>
-                        </form>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="text-xs font-bold text-slate-400">{{ $lead->created_at->format('M d, Y') }}</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center justify-end gap-2">
-                            <a href="{{ route('leads.show', $lead->id) }}" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="View Detail">
-                                <i data-lucide="eye" class="w-4 h-4"></i>
-                            </a>
-                            <a href="{{ route('leads.edit', $lead->id) }}" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Edit">
-                                <i data-lucide="edit" class="w-4 h-4"></i>
-                            </a>
-                            <form action="{{ route('leads.destroy', $lead->id) }}" method="POST" class="inline" data-confirm="Delete this lead?">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Delete">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">No leads found. Switch filters or clear search.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="crm-table-wrapper overflow-x-auto">
+        <div id="leads-table"></div>
     </div>
 
     @if($leads->hasPages())
@@ -199,4 +133,111 @@
     </div>
     @endif
 </div>
+
+{{-- Hidden delete forms for SweetAlert --}}
+@foreach($leads as $lead)
+<form id="delete-form-{{ $lead->id }}" action="{{ route('leads.destroy', $lead->id) }}" method="POST" class="hidden">
+    @csrf @method('DELETE')
+</form>
+@endforeach
+
 @endsection
+
+@php
+    $leadsData = $leads->map(function($lead) {
+        return [
+            'id' => $lead->id,
+            'project_name' => $lead->project_name,
+            'client_name' => $lead->client_name,
+            'email' => $lead->email,
+            'phone' => $lead->phone,
+            'status' => $lead->status,
+            'created_at' => $lead->created_at->format('M d, Y'),
+            'show_url' => route('leads.show', $lead->id),
+            'edit_url' => route('leads.edit', $lead->id),
+            'update_status_url' => route('leads.updateStatus', $lead->id),
+            'csrf' => csrf_token(),
+        ];
+    })->values();
+@endphp
+
+@push('scripts')
+<script>
+var leadsTable;
+
+var leadsData = @json($leadsData);
+
+document.addEventListener('DOMContentLoaded', function() {
+    leadsTable = createCRMTable('#leads-table', [
+        {
+            title: 'Project Title',
+            field: 'project_name',
+            minWidth: 200,
+            formatter: function(cell) {
+                var d = cell.getData();
+                return '<a href="' + d.show_url + '" class="text-sm font-black text-slate-800 dark:text-white hover:text-indigo-600 transition-colors">' + d.project_name + '</a>';
+            }
+        },
+        {
+            title: 'Customer',
+            field: 'client_name',
+            minWidth: 220,
+            formatter: function(cell) {
+                var d = cell.getData();
+                return '<div class="flex flex-col">' +
+                    '<span class="text-sm font-bold text-slate-700 dark:text-slate-300 drop-shadow-sm">' + d.client_name + '</span>' +
+                    '<span class="text-[11px] font-medium text-slate-400">' + (d.phone || '—') + ' | ' + (d.email || '—') + '</span>' +
+                '</div>';
+            }
+        },
+        {
+            title: 'Status',
+            field: 'status',
+            minWidth: 160,
+            formatter: function(cell) {
+                var d = cell.getData();
+                var colors = { 'Pending': 'amber', 'Confirm': 'emerald', 'Not Interested': 'rose', 'Followup': 'indigo' };
+                var c = colors[d.status] || 'slate';
+                
+                var optionsHtml = '';
+                var statuses = ['Pending', 'Followup', 'Confirm', 'Not Interested'];
+                statuses.forEach(function(s) {
+                    optionsHtml += '<option class="text-slate-700 bg-white" value="' + s + '" ' + (d.status === s ? 'selected' : '') + '>' + s + '</option>';
+                });
+
+                return '<form action="' + d.update_status_url + '" method="POST" class="m-0 inline-block w-full">' +
+                    '<input type="hidden" name="_token" value="' + d.csrf + '">' +
+                    '<input type="hidden" name="_method" value="PATCH">' +
+                    '<select name="status" onchange="this.form.submit()" class="w-full px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest bg-' + c + '-50 text-' + c + '-600 border border-' + c + '-100 focus:ring-0 focus:outline-none cursor-pointer pr-6 hover:bg-' + c + '-100 transition-colors">' +
+                        optionsHtml +
+                    '</select>' +
+                '</form>';
+            }
+        },
+        {
+            title: 'Created',
+            field: 'created_at',
+            minWidth: 120,
+            formatter: function(cell) {
+                return '<span class="text-xs font-bold text-slate-400">' + cell.getValue() + '</span>';
+            }
+        },
+        {
+            title: 'Actions',
+            field: 'id',
+            headerSort: false,
+            hozAlign: 'right',
+            minWidth: 140,
+            formatter: function(cell) {
+                var d = cell.getData();
+                return '<div class="flex items-center justify-end gap-2">' +
+                    '<a href="' + d.show_url + '" class="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 transition-all shadow-sm border border-transparent hover:border-indigo-100"><i data-lucide="eye" class="w-4 h-4"></i></a>' +
+                    '<a href="' + d.edit_url + '" class="p-2 rounded-xl text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/40 transition-all shadow-sm border border-transparent hover:border-amber-100"><i data-lucide="edit-3" class="w-4 h-4"></i></a>' +
+                    '<button type="button" class="swal-delete p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/40 transition-all shadow-sm border border-transparent hover:border-rose-100" data-form-id="delete-form-' + d.id + '" data-name="' + d.project_name + '" title="Delete Lead"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>' +
+                '</div>';
+            }
+        }
+    ], leadsData);
+});
+</script>
+@endpush

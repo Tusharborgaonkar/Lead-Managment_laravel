@@ -52,12 +52,31 @@ class LeadController extends Controller
 
     public function create()
     {
-        return view('leads.create');
+        $customers = Customer::orderBy('name')->get(['id', 'name', 'phone']);
+        return view('leads.create', compact('customers'));
     }
 
     public function store(StoreLeadRequest $request)
     {
-        Lead::create($request->validated());
+        $data = $request->validated();
+        
+        if ($data['customer_type'] === 'existing') {
+            $customer = Customer::findOrFail($data['customer_id']);
+            $data['client_name'] = $customer->name;
+            $data['phone'] = $customer->phone;
+            $data['email'] = $customer->email;
+            $data['customer_id'] = $customer->id;
+        } else {
+            // New Customer
+            $customer = Customer::create([
+                'name' => $data['client_name'],
+                'phone' => $data['phone'],
+                'email' => $data['email']
+            ]);
+            $data['customer_id'] = $customer->id;
+        }
+
+        Lead::create($data);
 
         return redirect()->route('leads.index')->with('success', 'Lead (Project) created successfully.');
     }

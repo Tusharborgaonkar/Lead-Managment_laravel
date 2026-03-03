@@ -22,7 +22,9 @@ class StoreLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'client_name' => 'required|string|max:255',
+            'customer_type' => 'required|string|in:new,existing',
+            'customer_id' => 'required_if:customer_type,existing|exists:customers,id|nullable',
+            'client_name' => 'required_if:customer_type,new|string|max:255|nullable',
             'phone' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
             'project_name' => 'required|string|max:255',

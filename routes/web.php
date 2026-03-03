@@ -82,6 +82,10 @@ Route::middleware(['auth'])->group(function () {
         // Roles sub-page
         Route::get('/roles', [UserController::class , 'roles'])->name('roles');
         Route::post('/roles', [UserController::class , 'storeRole'])->name('roles.store');
-        Route::delete('/roles/{role}', [UserController::class , 'destroyRole'])->name('roles.destroy');
     });
+    
+    // Exports
+    Route::get('/export/csv', [DashboardController::class, 'exportCsv'])->name('export.csv');
+    Route::get('/export/excel', [DashboardController::class, 'exportExcel'])->name('export.excel');
+    Route::get('/export/pdf', [DashboardController::class, 'exportPdf'])->name('export.pdf');
 });

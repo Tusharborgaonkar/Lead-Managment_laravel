@@ -153,7 +153,9 @@
     /* ---------------------------------------------------
        Global Export Logic
     --------------------------------------------------- */
-    window.exportReport = function (format = 'CSV', source = 'Report') {
+    window.exportReport = function (format = 'CSV', source = 'Report', url = '') {
+        if (!url) return;
+
         // Show initial progress toast
         const progressToast = document.createElement('div');
         progressToast.className = `fixed bottom-8 right-8 px-8 py-4 bg-slate-800 text-white rounded-[1.5rem] font-black text-sm shadow-2xl z-[999] animate-in fade-in slide-in-from-bottom-4 duration-300 flex items-center gap-4`;
@@ -163,13 +165,26 @@
         `;
         document.body.appendChild(progressToast);
 
-        // Simulate preparation delay
+        // Trigger the file download
+        window.location.href = url;
+
+        // Simulate preparation delay for the UI alerts to show after download starts
         setTimeout(() => {
             if (progressToast && progressToast.parentNode) progressToast.remove();
-            window.showToast(`${source} exported as ${format} successfully! ✨`);
 
-            // Simulate file download
-            console.log(`[Static Demo] Downloading ${source}.${format.toLowerCase()}`);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Export Started!',
+                    text: `Your ${source} (${format}) is downloading.`,
+                    icon: 'success',
+                    confirmButtonText: 'Okay',
+                    confirmButtonColor: '#6366f1',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            } else if (typeof toastr !== 'undefined') {
+                toastr.success(`${source} exported as ${format} successfully!`);
+            }
         }, 1500);
     };
 

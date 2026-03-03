@@ -75,7 +75,7 @@
      onclick="document.getElementById('sidebar').classList.remove('mobile-open'); this.classList.add('hidden');"></div>
 
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
     const toggle = document.getElementById('sidebarToggle');
     const sb     = document.getElementById('sidebar');
     const ov     = document.getElementById('sidebarOverlay');
@@ -85,5 +85,5 @@
             if (ov) ov.classList.toggle('hidden');
         });
     }
-})();
+});
 </script>

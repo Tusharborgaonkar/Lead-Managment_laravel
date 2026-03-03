@@ -105,14 +105,6 @@
 </header>
 
 <script>
-function toggleDropdown(id) {
-    ['notificationDropdown', 'messageDropdown'].forEach(d => {
-        const el = document.getElementById(d);
-        if (d === id) { el.classList.toggle('hidden'); }
-        else { el.classList.add('hidden'); }
-    });
-    if (typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 10);
-}
 function markNotificationsRead() {
     const badge = document.getElementById('notif-badge');
     if (badge) badge.classList.add('hidden');
@@ -121,15 +113,6 @@ function markMessagesRead() {
     const badge = document.getElementById('msg-badge');
     if (badge) badge.classList.add('hidden');
 }
-document.addEventListener('click', function(event) {
-    [['notificationDropdown','btnNotifications'],['messageDropdown','btnMessages']].forEach(([ddId, btnId]) => {
-        const dd  = document.getElementById(ddId);
-        const btn = document.getElementById(btnId);
-        if (dd && !dd.classList.contains('hidden') && !dd.contains(event.target) && btn && !btn.contains(event.target)) {
-            dd.classList.add('hidden');
-        }
-    });
-});
 (function() {
     const btn = document.getElementById('themeToggle');
     if (btn) {
