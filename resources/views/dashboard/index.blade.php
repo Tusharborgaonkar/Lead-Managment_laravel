@@ -459,30 +459,30 @@
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
         <h2 class="text-base font-bold text-slate-800 dark:text-white mb-6">Quick Actions</h2>
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="alert('Static Demo: Create Lead flow would open here.')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border border-transparent hover:border-indigo-100 transition-all flex flex-col items-center gap-3 group">
+            <a href="{{ route('leads.create') }}" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border border-transparent hover:border-indigo-100 transition-all flex flex-col items-center gap-3 group">
                 <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center transition-transform group-hover:-translate-y-1">
                     <i data-lucide="user-plus" class="w-5 h-5 text-indigo-500"></i>
                 </div>
                 <span class="text-xs font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">Add Lead</span>
-            </button>
-            <button onclick="alert('Static Demo: New Deal flow would open here.')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 border border-transparent hover:border-emerald-100 transition-all flex flex-col items-center gap-3 group">
+            </a>
+            <a href="{{ route('customers.create') }}" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 border border-transparent hover:border-emerald-100 transition-all flex flex-col items-center gap-3 group">
                 <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center transition-transform group-hover:-translate-y-1">
-                    <i data-lucide="handshake" class="w-5 h-5 text-emerald-500"></i>
+                    <i data-lucide="users" class="w-5 h-5 text-emerald-500"></i>
                 </div>
-                <span class="text-xs font-bold text-slate-500 group-hover:text-emerald-600 transition-colors">Add Deal</span>
-            </button>
-            <button onclick="alert('Static Demo: Report generator would open here.')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-amber-50 dark:hover:bg-amber-900/20 border border-transparent hover:border-amber-100 transition-all flex flex-col items-center gap-3 group">
+                <span class="text-xs font-bold text-slate-500 group-hover:text-emerald-600 transition-colors">Add Customer</span>
+            </a>
+            <a href="{{ route('activity.index') }}" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-amber-50 dark:hover:bg-amber-900/20 border border-transparent hover:border-amber-100 transition-all flex flex-col items-center gap-3 group">
                 <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center transition-transform group-hover:-translate-y-1">
                     <i data-lucide="file-text" class="w-5 h-5 text-amber-500"></i>
                 </div>
                 <span class="text-xs font-bold text-slate-500 group-hover:text-amber-600 transition-colors">Generate Report</span>
-            </button>
-            <button onclick="alert('Static Demo: User settings would open here.')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-sky-50 dark:hover:bg-sky-900/20 border border-transparent hover:border-sky-100 transition-all flex flex-col items-center gap-3 group">
+            </a>
+            <a href="{{ route('settings.index') }}" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-sky-50 dark:hover:bg-sky-900/20 border border-transparent hover:border-sky-100 transition-all flex flex-col items-center gap-3 group">
                 <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center transition-transform group-hover:-translate-y-1">
                     <i data-lucide="settings" class="w-5 h-5 text-sky-500"></i>
                 </div>
                 <span class="text-xs font-bold text-slate-500 group-hover:text-sky-600 transition-colors">Settings</span>
-            </button>
+            </a>
         </div>
     </div>
 </div>
